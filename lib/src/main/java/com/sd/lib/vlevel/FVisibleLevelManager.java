@@ -103,7 +103,7 @@ public class FVisibleLevelManager
          *
          * @param name
          */
-        public LevelItem putItem(String name)
+        public LevelItem addItem(String name)
         {
             if (name == null)
                 return null;
