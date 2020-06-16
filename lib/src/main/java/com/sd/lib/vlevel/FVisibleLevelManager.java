@@ -50,6 +50,14 @@ public class FVisibleLevelManager
         return level;
     }
 
+    /**
+     * 清空所有等级
+     */
+    public void clearLevel()
+    {
+        mMapLevel.clear();
+    }
+
     public final class Level
     {
         private final String mName;
