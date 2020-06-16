@@ -15,6 +15,10 @@ public class MainActivity extends AppCompatActivity
 {
     public static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String LEVEL_ITEM_HOME = HomeView.class.getName();
+    private static final String LEVEL_ITEM_LIVE = LiveView.class.getName();
+    private static final String LEVEL_ITEM_ME = MeView.class.getName();
+
     private ActivityMainBinding mBinding;
 
     private HomeView mHomeView;
@@ -22,9 +26,6 @@ public class MainActivity extends AppCompatActivity
     private MeView mMeView;
 
     private final FVisibleLevelManager.Level mVisibleLevel = FVisibleLevelManager.getDefault().getLevel("home");
-    private final String mLevelItemHome = HomeView.class.getName();
-    private final String mLevelItemLive = LiveView.class.getName();
-    private final String mLevelItemMe = MeView.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,15 +48,15 @@ public class MainActivity extends AppCompatActivity
                 switch (checkedId)
                 {
                     case R.id.btn_home:
-                        mVisibleLevel.visibleItem(mLevelItemHome);
+                        mVisibleLevel.visibleItem(LEVEL_ITEM_HOME);
                         mBinding.flContainer.addView(mHomeView);
                         break;
                     case R.id.btn_live:
-                        mVisibleLevel.visibleItem(mLevelItemLive);
+                        mVisibleLevel.visibleItem(LEVEL_ITEM_LIVE);
                         mBinding.flContainer.addView(mLiveView);
                         break;
                     case R.id.btn_me:
-                        mVisibleLevel.visibleItem(mLevelItemMe);
+                        mVisibleLevel.visibleItem(LEVEL_ITEM_ME);
                         mBinding.flContainer.addView(mMeView);
                         break;
                     default:
@@ -70,12 +71,12 @@ public class MainActivity extends AppCompatActivity
     private void initVisibleLevel()
     {
         mVisibleLevel.clearItem();
-        mVisibleLevel.addItem(HomeView.class.getName());
-        mVisibleLevel.addItem(LiveView.class.getName());
-        mVisibleLevel.addItem(MeView.class.getName());
+        mVisibleLevel.addItem(LEVEL_ITEM_HOME);
+        mVisibleLevel.addItem(LEVEL_ITEM_LIVE);
+        mVisibleLevel.addItem(LEVEL_ITEM_ME);
 
-        mVisibleLevel.addLevelItemCallback(mLevelItemHome, mHomeView);
-        mVisibleLevel.addLevelItemCallback(mLevelItemLive, mLiveView);
-        mVisibleLevel.addLevelItemCallback(mLevelItemMe, mMeView);
+        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_HOME, mHomeView);
+        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_LIVE, mLiveView);
+        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_ME, mMeView);
     }
 }
