@@ -75,6 +75,17 @@ public class FVisibleLevelManager
         }
 
         /**
+         * 判断是否是指定名称的等级
+         *
+         * @param name
+         * @return
+         */
+        public boolean is(String name)
+        {
+            return mName.equals(name);
+        }
+
+        /**
          * 返回可见的Item
          *
          * @return
@@ -204,6 +215,17 @@ public class FVisibleLevelManager
         public String getName()
         {
             return mName;
+        }
+
+        /**
+         * 判断是否是指定名称的Item
+         *
+         * @param name
+         * @return
+         */
+        public boolean is(String name)
+        {
+            return mName.equals(name);
         }
 
         /**
