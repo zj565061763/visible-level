@@ -5,17 +5,17 @@ import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
 
 class TargetItemVisibleCallbackAdapter extends TargetItemVisibleCallback
 {
-    private final FLevelItemCallback mLevelItemCallback;
+    private final FLevelItemCallback mItemCallback;
 
-    public TargetItemVisibleCallbackAdapter(String levelName, String levelItemName, FLevelItemCallback levelItemCallback)
+    public TargetItemVisibleCallbackAdapter(String levelName, String levelItemName, FLevelItemCallback itemCallback)
     {
         super(levelName, levelItemName);
-        mLevelItemCallback = levelItemCallback;
+        mItemCallback = itemCallback;
     }
 
     @Override
     protected final void onVisibleChangedImpl(boolean visible, FVisibleLevelManager.LevelItem item)
     {
-        mLevelItemCallback.onLevelItemVisibleChanged(visible);
+        mItemCallback.onLevelItemVisibleChanged(visible);
     }
 }
