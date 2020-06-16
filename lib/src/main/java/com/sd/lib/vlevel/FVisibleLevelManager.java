@@ -233,6 +233,14 @@ public class FVisibleLevelManager
             mVisibleItem = null;
         }
 
+        /**
+         * 通知可见Item
+         */
+        public void notifyVisibleItem()
+        {
+            visibleItemInternal(true, mVisibleItem);
+        }
+
         private void visibleItemInternal(boolean visible, LevelItem levelItem)
         {
             if (levelItem == null)
