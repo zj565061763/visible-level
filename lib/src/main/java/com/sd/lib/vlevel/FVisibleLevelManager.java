@@ -1,5 +1,6 @@
 package com.sd.lib.vlevel;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +56,7 @@ public class FVisibleLevelManager
         private final Map<String, LevelItem> mMapLevelItem = new ConcurrentHashMap<>();
 
         private boolean mIsVisible = true;
-        private String mVisibleItem;
+        private LevelItem mVisibleItem;
 
         private final Collection<VisibleCallback> mListCallback = new CopyOnWriteArraySet<>();
 
@@ -86,11 +87,21 @@ public class FVisibleLevelManager
         }
 
         /**
+         * 等级是否可见
+         *
+         * @return
+         */
+        public boolean isVisible()
+        {
+            return mIsVisible;
+        }
+
+        /**
          * 返回可见的Item
          *
          * @return
          */
-        public String getVisibleItem()
+        public LevelItem getVisibleItem()
         {
             return mVisibleItem;
         }
@@ -110,6 +121,28 @@ public class FVisibleLevelManager
         }
 
         /**
+         * 添加回调对象
+         *
+         * @param callback
+         */
+        public void addVisibleCallback(VisibleCallback callback)
+        {
+            if (callback == null)
+                return;
+            mListCallback.add(callback);
+        }
+
+        /**
+         * 移除回调对象
+         *
+         * @param callback
+         */
+        public void removeVisibleCallback(VisibleCallback callback)
+        {
+            mListCallback.remove(callback);
+        }
+
+        /**
          * 添加Item
          *
          * @param name
@@ -122,7 +155,7 @@ public class FVisibleLevelManager
             LevelItem item = mMapLevelItem.get(name);
             if (item == null)
             {
-                item = new LevelItem(name);
+                item = new LevelItem(name, this);
                 mMapLevelItem.put(name, item);
             }
             return item;
@@ -136,6 +169,17 @@ public class FVisibleLevelManager
         public void removeItem(String name)
         {
             mMapLevelItem.remove(name);
+        }
+
+        /**
+         * 返回某个Item
+         *
+         * @param name
+         * @return
+         */
+        public LevelItem getItem(String name)
+        {
+            return mMapLevelItem.get(name);
         }
 
         /**
@@ -156,17 +200,18 @@ public class FVisibleLevelManager
             if (!mIsVisible)
                 throw new RuntimeException("level is not visible:" + mName);
 
-            if (!mMapLevelItem.containsKey(name))
+            final LevelItem item = mMapLevelItem.get(name);
+            if (item == null)
                 return;
 
-            final String old = mVisibleItem;
-            if (!name.equals(old))
+            final LevelItem old = mVisibleItem;
+            if (!item.equals(old))
             {
                 if (old != null)
                     visibleItemInternal(false, old);
 
-                mVisibleItem = name;
-                visibleItemInternal(true, name);
+                mVisibleItem = item;
+                visibleItemInternal(true, item);
             }
         }
 
@@ -179,32 +224,60 @@ public class FVisibleLevelManager
             mVisibleItem = null;
         }
 
-        private void visibleItemInternal(boolean visible, String name)
+        private void visibleItemInternal(boolean visible, LevelItem levelItem)
         {
-            if (name == null)
-                return;
-
-            final LevelItem levelItem = mMapLevelItem.get(name);
             if (levelItem == null)
                 return;
 
-            for (VisibleCallback item : mListCallback)
+            if (mMapLevelItem.containsKey(levelItem.getName()))
             {
-                item.onVisibleChanged(visible, levelItem, this);
-            }
+                for (VisibleCallback item : mListCallback)
+                {
+                    item.onVisibleChanged(visible, levelItem, this);
+                }
 
-            levelItem.notifyChildLevel(visible);
+                levelItem.notifyChildLevel(visible);
+            }
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return mName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final Level other = (Level) o;
+            return mName.equals(other.mName);
         }
     }
 
     public final class LevelItem
     {
         private final String mName;
+        private final Level mLevel;
+
         private String mChildLevel;
 
-        private LevelItem(String name)
+        private LevelItem(String name, Level level)
         {
             mName = name;
+            mLevel = level;
+        }
+
+        /**
+         * 返回Item所在的等级
+         *
+         * @return
+         */
+        public Level getLevel()
+        {
+            return mLevel;
         }
 
         /**
@@ -229,6 +302,16 @@ public class FVisibleLevelManager
         }
 
         /**
+         * 返回Item是否可见
+         *
+         * @return
+         */
+        public boolean isVisible()
+        {
+            return getLevel().isVisible() && this.equals(getLevel().mVisibleItem);
+        }
+
+        /**
          * 设置Item的子等级
          *
          * @param level
@@ -240,9 +323,25 @@ public class FVisibleLevelManager
 
         private void notifyChildLevel(boolean visible)
         {
-            final Level level = getLevel(mChildLevel);
+            final Level level = FVisibleLevelManager.this.getLevel(mChildLevel);
             if (level != null)
                 level.setVisible(visible);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Arrays.hashCode(new Object[]{mName, mLevel});
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final LevelItem other = (LevelItem) o;
+            return mName.equals(other.mName) && mLevel.equals(other.mLevel);
         }
     }
 
