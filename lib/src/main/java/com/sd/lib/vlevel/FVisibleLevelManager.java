@@ -54,7 +54,7 @@ public class FVisibleLevelManager
         private final String mName;
         private final Map<String, LevelItem> mMapLevelItem = new ConcurrentHashMap<>();
 
-        private boolean mIsVisible;
+        private boolean mIsVisible = true;
         private String mVisibleItem;
 
         private final Collection<VisibleCallback> mListCallback = new CopyOnWriteArraySet<>();
@@ -72,6 +72,16 @@ public class FVisibleLevelManager
         public String getName()
         {
             return mName;
+        }
+
+        /**
+         * 返回可见的Item
+         *
+         * @return
+         */
+        public String getVisibleItem()
+        {
+            return mVisibleItem;
         }
 
         /**
@@ -155,6 +165,7 @@ public class FVisibleLevelManager
         public void invisibleItem()
         {
             visibleItemInternal(false, mVisibleItem);
+            mVisibleItem = null;
         }
 
         private void visibleItemInternal(boolean visible, String name)
