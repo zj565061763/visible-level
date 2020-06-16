@@ -188,6 +188,7 @@ public class FVisibleLevelManager
         public void clearItem()
         {
             mMapLevelItem.clear();
+            mVisibleItem = null;
         }
 
         /**
