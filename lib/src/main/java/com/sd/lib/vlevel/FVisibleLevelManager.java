@@ -1,5 +1,10 @@
 package com.sd.lib.vlevel;
 
+import android.view.View;
+
+import com.sd.lib.vlevel.callback.ViewItemVisibleCallbackAdapter;
+import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +72,7 @@ public class FVisibleLevelManager
         private boolean mIsVisible = true;
         private LevelItem mVisibleItem;
 
-        private final Map<VisibleCallback, String> mListCallback = new WeakHashMap<>();
+        private final Map<ItemVisibleCallback, String> mListCallback = new WeakHashMap<>();
 
         private Level(String name)
         {
@@ -134,7 +139,7 @@ public class FVisibleLevelManager
          *
          * @param callback
          */
-        public void addVisibleCallback(VisibleCallback callback)
+        public void addItemVisibleCallback(ItemVisibleCallback callback)
         {
             if (callback == null)
                 return;
@@ -146,9 +151,24 @@ public class FVisibleLevelManager
          *
          * @param callback
          */
-        public void removeVisibleCallback(VisibleCallback callback)
+        public void removeItemVisibleCallback(ItemVisibleCallback callback)
         {
             mListCallback.remove(callback);
+        }
+
+        /**
+         * 添加指定Item的可见状态变化回调
+         *
+         * @param levelItem Item名称
+         * @param callback  必须实现{@link FLevelItemCallback}接口
+         */
+        public void addLevelItemCallback(String levelItem, View callback)
+        {
+            if (levelItem == null || callback == null)
+                return;
+
+            final ViewItemVisibleCallbackAdapter adapter = new ViewItemVisibleCallbackAdapter(mName, levelItem, callback);
+            addItemVisibleCallback(adapter);
         }
 
         /**
@@ -249,10 +269,10 @@ public class FVisibleLevelManager
 
             if (mMapLevelItem.containsKey(levelItem.getName()))
             {
-                final Collection<VisibleCallback> callbacks = Collections.unmodifiableCollection(mListCallback.keySet());
-                for (VisibleCallback item : callbacks)
+                final Collection<ItemVisibleCallback> callbacks = Collections.unmodifiableCollection(mListCallback.keySet());
+                for (ItemVisibleCallback item : callbacks)
                 {
-                    item.onVisibleChanged(visible, levelItem, this);
+                    item.onVisibleChanged(visible, levelItem);
                 }
 
                 levelItem.notifyChildLevel(visible);
@@ -364,15 +384,17 @@ public class FVisibleLevelManager
         }
     }
 
-    public interface VisibleCallback
+    /**
+     * Item可见状态变化回调
+     */
+    public interface ItemVisibleCallback
     {
         /**
          * 可见状态变化回调
          *
          * @param visible
-         * @param levelItem
-         * @param level
+         * @param item
          */
-        void onVisibleChanged(boolean visible, LevelItem levelItem, Level level);
+        void onVisibleChanged(boolean visible, LevelItem item);
     }
 }
