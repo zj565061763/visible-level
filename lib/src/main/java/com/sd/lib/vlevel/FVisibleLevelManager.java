@@ -2,9 +2,10 @@ package com.sd.lib.vlevel;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class FVisibleLevelManager
 {
@@ -66,7 +67,7 @@ public class FVisibleLevelManager
         private boolean mIsVisible = true;
         private LevelItem mVisibleItem;
 
-        private final Collection<VisibleCallback> mListCallback = new CopyOnWriteArraySet<>();
+        private final Map<VisibleCallback, String> mListCallback = new WeakHashMap<>();
 
         private Level(String name)
         {
@@ -137,7 +138,7 @@ public class FVisibleLevelManager
         {
             if (callback == null)
                 return;
-            mListCallback.add(callback);
+            mListCallback.put(callback, "");
         }
 
         /**
@@ -248,7 +249,8 @@ public class FVisibleLevelManager
 
             if (mMapLevelItem.containsKey(levelItem.getName()))
             {
-                for (VisibleCallback item : mListCallback)
+                final Collection<VisibleCallback> callbacks = Collections.unmodifiableCollection(mListCallback.keySet());
+                for (VisibleCallback item : callbacks)
                 {
                     item.onVisibleChanged(visible, levelItem, this);
                 }
