@@ -3,11 +3,11 @@ package com.sd.lib.vlevel.callback;
 import com.sd.lib.vlevel.FVisibleLevelManager;
 import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
 
-class TargetItemVisibleCallbackAdapter extends TargetItemVisibleCallback
+class TargetItemCallbackAdapter extends TargetItemCallback
 {
     private final FLevelItemCallback mItemCallback;
 
-    public TargetItemVisibleCallbackAdapter(String levelName, String levelItemName, FLevelItemCallback itemCallback)
+    public TargetItemCallbackAdapter(String levelName, String levelItemName, FLevelItemCallback itemCallback)
     {
         super(levelName, levelItemName);
         mItemCallback = itemCallback;

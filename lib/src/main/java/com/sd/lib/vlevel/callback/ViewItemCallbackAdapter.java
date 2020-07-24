@@ -7,9 +7,9 @@ import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
 
 import java.lang.ref.WeakReference;
 
-public class ViewItemVisibleCallbackAdapter extends TargetItemVisibleCallbackAdapter
+public class ViewItemCallbackAdapter extends TargetItemCallbackAdapter
 {
-    public ViewItemVisibleCallbackAdapter(String levelName, String levelItemName, View view)
+    public ViewItemCallbackAdapter(String levelName, String levelItemName, View view)
     {
         super(levelName, levelItemName, new ViewLevelItemCallback(view));
         /**

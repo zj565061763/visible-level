@@ -3,7 +3,7 @@ package com.sd.lib.vlevel;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.sd.lib.vlevel.callback.ViewItemVisibleCallbackAdapter;
+import com.sd.lib.vlevel.callback.ViewItemCallbackAdapter;
 import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class FVisibleLevelManager
     public Level getLevel(String name)
     {
         if (TextUtils.isEmpty(name))
-            throw new IllegalArgumentException("name is empty");
+            return null;
 
         Level level = mMapLevel.get(name);
         if (level == null)
@@ -73,13 +73,41 @@ public class FVisibleLevelManager
         private boolean mIsVisible = true;
         private LevelItem mVisibleItem;
 
-        private final Map<ItemVisibleCallback, String> mListCallback = new WeakHashMap<>();
+        private final Map<LevelCallback, String> mCallbackHolder = new WeakHashMap<>();
 
         private Level(String name)
         {
             if (TextUtils.isEmpty(name))
                 throw new IllegalArgumentException("name is empty");
             mName = name;
+        }
+
+        private Collection<LevelCallback> getCallbacks()
+        {
+            return Collections.unmodifiableCollection(mCallbackHolder.keySet());
+        }
+
+        /**
+         * 添加回调，弱引用保存回调对象
+         *
+         * @param callback
+         */
+        public void addCallback(LevelCallback callback)
+        {
+            if (callback == null)
+                return;
+
+            mCallbackHolder.put(callback, "");
+        }
+
+        /**
+         * 移除回调
+         *
+         * @param callback
+         */
+        public void removeCallback(LevelCallback callback)
+        {
+            mCallbackHolder.remove(callback);
         }
 
         /**
@@ -133,45 +161,32 @@ public class FVisibleLevelManager
             if (mIsVisible != visible)
             {
                 mIsVisible = visible;
+
+                for (LevelCallback item : getCallbacks())
+                {
+                    item.onLevelVisibilityChanged(visible, Level.this);
+                }
+
                 visibleItemInternal(visible, mVisibleItem);
             }
         }
 
         /**
-         * 添加回调对象
-         *
-         * @param callback
-         */
-        public void addItemVisibleCallback(ItemVisibleCallback callback)
-        {
-            if (callback == null)
-                return;
-            mListCallback.put(callback, "");
-        }
-
-        /**
-         * 移除回调对象
-         *
-         * @param callback
-         */
-        public void removeItemVisibleCallback(ItemVisibleCallback callback)
-        {
-            mListCallback.remove(callback);
-        }
-
-        /**
          * 添加指定Item的可见状态变化回调
          *
-         * @param levelItem Item名称
-         * @param callback  必须实现{@link FLevelItemCallback}接口
+         * @param itemName Item名称
+         * @param view     必须实现{@link FLevelItemCallback}接口
          */
-        public void addLevelItemCallback(String levelItem, View callback)
+        public void addLevelItemCallback(String itemName, View view)
         {
-            if (levelItem == null || callback == null)
-                return;
+            if (TextUtils.isEmpty(itemName))
+                throw new IllegalArgumentException("itemName is empty");
 
-            final ViewItemVisibleCallbackAdapter adapter = new ViewItemVisibleCallbackAdapter(mName, levelItem, callback);
-            addItemVisibleCallback(adapter);
+            if (!(view instanceof FLevelItemCallback))
+                throw new IllegalArgumentException("view should be instance of " + FLevelItemCallback.class.getName());
+
+            final ViewItemCallbackAdapter adapter = new ViewItemCallbackAdapter(mName, itemName, view);
+            addCallback(adapter);
         }
 
         /**
@@ -189,6 +204,11 @@ public class FVisibleLevelManager
             {
                 item = new LevelItem(name, this);
                 mMapLevelItem.put(name, item);
+
+                for (LevelCallback callback : getCallbacks())
+                {
+                    callback.onItemAdded(item, Level.this);
+                }
             }
             return item;
         }
@@ -200,7 +220,14 @@ public class FVisibleLevelManager
          */
         public void removeItem(String name)
         {
-            mMapLevelItem.remove(name);
+            final LevelItem item = mMapLevelItem.remove(name);
+            if (item != null)
+            {
+                for (LevelCallback callback : getCallbacks())
+                {
+                    callback.onItemRemoved(item, Level.this);
+                }
+            }
         }
 
         /**
@@ -221,7 +248,6 @@ public class FVisibleLevelManager
         {
             mMapLevelItem.clear();
             mVisibleItem = null;
-
             // notify item invisible ?
         }
 
@@ -274,10 +300,9 @@ public class FVisibleLevelManager
 
             if (mMapLevelItem.containsKey(levelItem.getName()))
             {
-                final Collection<ItemVisibleCallback> callbacks = Collections.unmodifiableCollection(mListCallback.keySet());
-                for (ItemVisibleCallback item : callbacks)
+                for (LevelCallback item : getCallbacks())
                 {
-                    item.onVisibleChanged(visible, levelItem);
+                    item.onItemVisibilityChanged(visible, levelItem, Level.this);
                 }
 
                 levelItem.notifyChildLevel(visible);
@@ -398,16 +423,41 @@ public class FVisibleLevelManager
     }
 
     /**
-     * Item可见状态变化回调
+     * 等级回调
      */
-    public interface ItemVisibleCallback
+    public interface LevelCallback
     {
         /**
-         * 可见状态变化回调
+         * 等级可见状态变化回调
+         *
+         * @param visible
+         * @param level
+         */
+        void onLevelVisibilityChanged(boolean visible, Level level);
+
+        /**
+         * item被添加
+         *
+         * @param item
+         * @param level
+         */
+        void onItemAdded(LevelItem item, Level level);
+
+        /**
+         * item被移除
+         *
+         * @param item
+         * @param level
+         */
+        void onItemRemoved(LevelItem item, Level level);
+
+        /**
+         * item可见状态变化回调
          *
          * @param visible
          * @param item
+         * @param level
          */
-        void onVisibleChanged(boolean visible, LevelItem item);
+        void onItemVisibilityChanged(boolean visible, LevelItem item, Level level);
     }
 }
