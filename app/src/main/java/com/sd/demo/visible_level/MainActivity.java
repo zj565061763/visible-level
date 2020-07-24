@@ -1,6 +1,7 @@
 package com.sd.demo.visible_level;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity
         mHomeView = new HomeView(this);
         mLiveView = new LiveView(this);
         mMeView = new MeView(this);
+
+        mVisibleLevel.addCallback(mLevelCallback);
 
         initVisibleLevel();
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -79,4 +82,31 @@ public class MainActivity extends AppCompatActivity
         mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_LIVE, mLiveView);
         mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_ME, mMeView);
     }
+
+    private final FVisibleLevelManager.LevelCallback mLevelCallback = new FVisibleLevelManager.LevelCallback()
+    {
+        @Override
+        public void onLevelVisibilityChanged(boolean visible, FVisibleLevelManager.Level level)
+        {
+            Log.i(TAG, "onLevelVisibilityChanged visible:" + visible + " level:" + level.getName());
+        }
+
+        @Override
+        public void onItemAdded(FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
+        {
+            Log.i(TAG, "onItemAdded item:" + item.getName() + " level:" + level.getName());
+        }
+
+        @Override
+        public void onItemRemoved(FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
+        {
+            Log.i(TAG, "onItemRemoved item:" + item.getName() + " level:" + level.getName());
+        }
+
+        @Override
+        public void onItemVisibilityChanged(boolean visible, FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
+        {
+            Log.i(TAG, "onItemVisibilityChanged visible:" + visible + " item:" + item.getName() + " level:" + level.getName());
+        }
+    };
 }
