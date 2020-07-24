@@ -1,5 +1,6 @@
 package com.sd.lib.vlevel;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import com.sd.lib.vlevel.callback.ViewItemVisibleCallbackAdapter;
@@ -44,8 +45,8 @@ public class FVisibleLevelManager
      */
     public Level getLevel(String name)
     {
-        if (name == null)
-            return null;
+        if (TextUtils.isEmpty(name))
+            throw new IllegalArgumentException("name is empty");
 
         Level level = mMapLevel.get(name);
         if (level == null)
@@ -76,6 +77,8 @@ public class FVisibleLevelManager
 
         private Level(String name)
         {
+            if (TextUtils.isEmpty(name))
+                throw new IllegalArgumentException("name is empty");
             mName = name;
         }
 
@@ -178,8 +181,8 @@ public class FVisibleLevelManager
          */
         public LevelItem addItem(String name)
         {
-            if (name == null)
-                return null;
+            if (TextUtils.isEmpty(name))
+                throw new IllegalArgumentException("name is empty");
 
             LevelItem item = mMapLevelItem.get(name);
             if (item == null)
@@ -218,6 +221,8 @@ public class FVisibleLevelManager
         {
             mMapLevelItem.clear();
             mVisibleItem = null;
+
+            // notify item invisible ?
         }
 
         /**
@@ -286,12 +291,13 @@ public class FVisibleLevelManager
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(Object obj)
         {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (obj == this) return true;
+            if (obj == null) return false;
+            if (obj.getClass() != getClass()) return false;
 
-            final Level other = (Level) o;
+            final Level other = (Level) obj;
             return mName.equals(other.mName);
         }
     }
@@ -305,6 +311,12 @@ public class FVisibleLevelManager
 
         private LevelItem(String name, Level level)
         {
+            if (TextUtils.isEmpty(name))
+                throw new IllegalArgumentException("name is empty");
+
+            if (level == null)
+                throw new NullPointerException("level is null");
+
             mName = name;
             mLevel = level;
         }
@@ -374,12 +386,13 @@ public class FVisibleLevelManager
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(Object obj)
         {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (obj == this) return true;
+            if (obj == null) return false;
+            if (obj.getClass() != getClass()) return false;
 
-            final LevelItem other = (LevelItem) o;
+            final LevelItem other = (LevelItem) obj;
             return mName.equals(other.mName) && mLevel.equals(other.mLevel);
         }
     }
