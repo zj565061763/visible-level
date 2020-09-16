@@ -61,23 +61,16 @@ public abstract class FVisibleLevel
      *
      * @param classes
      */
-    protected final void initItem(Class<? extends FVisibleLevelItem>... classes)
+    protected final synchronized void initItem(Class<? extends FVisibleLevelItem>... classes)
     {
         if (classes == null || classes.length <= 0)
             throw new IllegalArgumentException("classes is null or empty");
 
+        mMapLevelItem.clear();
         for (Class<? extends FVisibleLevelItem> clazz : classes)
         {
             checkLevelItemClass(clazz);
-            if (mMapLevelItem.containsKey(clazz))
-                continue;
-
-            final FVisibleLevelItem item = createLevelItem(clazz);
-            if (item == null)
-                throw new RuntimeException("create level item failed " + clazz.getName());
-
-            mMapLevelItem.put(clazz, item);
-            item.onCreate();
+            mMapLevelItem.put(clazz, InternalItem.DEFAULT);
         }
     }
 
@@ -87,14 +80,23 @@ public abstract class FVisibleLevel
      * @param clazz
      * @return
      */
-    public final FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
+    public final synchronized FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
     {
         checkLevelItemClass(clazz);
 
-        final FVisibleLevelItem item = mMapLevelItem.get(clazz);
+        FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
             throw new RuntimeException("Item was not found in level " + FVisibleLevel.this);
 
+        if (item == InternalItem.DEFAULT)
+        {
+            item = createLevelItem(clazz);
+            if (item == null)
+                throw new RuntimeException("create level item failed " + clazz.getName());
+
+            mMapLevelItem.put(clazz, item);
+            item.onCreate();
+        }
         return item;
     }
 
@@ -269,6 +271,16 @@ public abstract class FVisibleLevel
 
         if (clazz == FVisibleLevelItem.class)
             throw new IllegalArgumentException("clazz is " + clazz.getName());
+    }
+
+    static final class InternalItem extends FVisibleLevelItem
+    {
+        public static final InternalItem DEFAULT = new InternalItem();
+
+        @Override
+        public void onCreate()
+        {
+        }
     }
 
     public interface VisibilityCallback
