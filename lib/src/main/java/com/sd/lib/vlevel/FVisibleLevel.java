@@ -217,10 +217,6 @@ public abstract class FVisibleLevel
 
         if (mMapLevelItem.containsKey(item.getClass()))
         {
-            for (VisibilityCallback callback : getVisibilityCallbacks())
-            {
-                callback.onLevelItemVisibilityChanged(visible, item, FVisibleLevel.this);
-            }
             item.notifyVisibility(visible);
         }
     }
@@ -292,14 +288,5 @@ public abstract class FVisibleLevel
          * @param level
          */
         void onLevelVisibilityChanged(boolean visible, FVisibleLevel level);
-
-        /**
-         * item可见状态变化回调
-         *
-         * @param visible
-         * @param item
-         * @param level
-         */
-        void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item, FVisibleLevel level);
     }
 }

@@ -12,7 +12,6 @@ import com.sd.demo.visible_level.appview.MeView;
 import com.sd.demo.visible_level.databinding.ActivityMainBinding;
 import com.sd.demo.visible_level.level_home.HomeLevel;
 import com.sd.lib.vlevel.FVisibleLevel;
-import com.sd.lib.vlevel.FVisibleLevelItem;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -81,12 +80,6 @@ public class MainActivity extends AppCompatActivity
         public void onLevelVisibilityChanged(boolean visible, FVisibleLevel level)
         {
             Log.i(TAG, "onLevelVisibilityChanged visible:" + visible + " level:" + level);
-        }
-
-        @Override
-        public void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item, FVisibleLevel level)
-        {
-            Log.i(TAG, "onLevelItemVisibilityChanged visible:" + visible + " item:" + item + " level:" + level);
         }
     };
 }
