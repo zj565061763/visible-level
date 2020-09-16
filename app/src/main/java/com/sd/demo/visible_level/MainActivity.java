@@ -10,7 +10,6 @@ import com.sd.demo.visible_level.appview.HomeView;
 import com.sd.demo.visible_level.appview.LiveView;
 import com.sd.demo.visible_level.appview.MeView;
 import com.sd.demo.visible_level.databinding.ActivityMainBinding;
-import com.sd.lib.vlevel.FVisibleLevelManager;
 
 public class MainActivity extends AppCompatActivity
 {
