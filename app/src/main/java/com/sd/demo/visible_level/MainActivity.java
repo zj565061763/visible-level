@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity
         mMeView = new MeView(this);
 
         mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
+        mVisibleLevel.getItem(HomeLevelItemHome.class).addVisibilityCallback(mHomeView);
+        mVisibleLevel.getItem(HomeLevelItemLive.class).addVisibilityCallback(mLiveView);
+        mVisibleLevel.getItem(HomeLevelItemMe.class).addVisibilityCallback(mMeView);
 
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {

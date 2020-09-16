@@ -9,9 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sd.demo.visible_level.MainActivity;
-import com.sd.lib.vlevel.callback.item.FLevelItemCallback;
+import com.sd.lib.vlevel.FVisibleLevelItem;
 
-public class BaseAppView extends FrameLayout implements FLevelItemCallback
+public class BaseAppView extends FrameLayout implements FVisibleLevelItem.VisibilityCallback
 {
     public BaseAppView(@NonNull Context context)
     {
@@ -24,8 +24,10 @@ public class BaseAppView extends FrameLayout implements FLevelItemCallback
     }
 
     @Override
-    public void onLevelItemVisibleChanged(boolean visible)
+    public void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item)
     {
-        Log.i(MainActivity.TAG, "onLevelItemVisibleChanged visible:" + visible + " view:" + this);
+        Log.i(MainActivity.TAG, "AppView onLevelItemVisibilityChanged visible:" + visible
+                + " item:" + item
+                + " view:" + this);
     }
 }

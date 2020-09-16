@@ -8,21 +8,12 @@ import java.util.WeakHashMap;
 
 public abstract class FVisibleLevelItem
 {
-    private final FVisibleLevel mLevel;
+    FVisibleLevel mLevel;
     private FVisibleLevel mChildLevel;
-
     private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
 
     protected FVisibleLevelItem()
     {
-        this(null);
-    }
-
-    FVisibleLevelItem(FVisibleLevel level)
-    {
-        if (level == null)
-            throw new NullPointerException("level is null");
-        mLevel = level;
     }
 
     /**
