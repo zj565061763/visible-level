@@ -1,5 +1,6 @@
 package com.sd.lib.vlevel;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -69,7 +70,7 @@ public abstract class FVisibleLevel
         FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
         {
-            item = createLevelItem(clazz);
+            item = createLevelItem(clazz, FVisibleLevel.this);
             if (item == null)
                 throw new RuntimeException("create level item failed " + clazz.getName());
 
@@ -219,15 +220,13 @@ public abstract class FVisibleLevel
         return null;
     }
 
-    private static FVisibleLevelItem createLevelItem(Class<? extends FVisibleLevelItem> clazz)
+    private static FVisibleLevelItem createLevelItem(Class<? extends FVisibleLevelItem> clazz, FVisibleLevel level)
     {
         try
         {
-            return clazz.newInstance();
-        } catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-        } catch (InstantiationException e)
+            final Constructor constructor = clazz.getConstructor(FVisibleLevel.class);
+            return (FVisibleLevelItem) constructor.newInstance(level);
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
