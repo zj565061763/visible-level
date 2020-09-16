@@ -34,6 +34,9 @@ public abstract class FVisibleLevel
         if (level == null)
         {
             level = createLevel(clazz);
+            if (level == null)
+                throw new RuntimeException("create level failed " + clazz.getName());
+
             MAP_LEVEL.put(clazz, level);
             level.onCreate();
         }
@@ -67,6 +70,9 @@ public abstract class FVisibleLevel
         if (item == null)
         {
             item = createLevelItem(clazz);
+            if (item == null)
+                throw new RuntimeException("create level item failed " + clazz.getName());
+
             mMapLevelItem.put(clazz, item);
             item.onCreate();
         }
