@@ -1,14 +1,39 @@
 package com.sd.demo.visible_level.level_home;
 
 import com.sd.lib.vlevel.FVisibleLevel;
+import com.sd.lib.vlevel.FVisibleLevelItem;
 
-public class HomeLevel extends FVisibleLevel
+public final class HomeLevel extends FVisibleLevel
 {
     @Override
     public void onCreate()
     {
-        getItem(HomeLevelItemHome.class);
-        getItem(HomeLevelItemLive.class);
-        getItem(HomeLevelItemMe.class);
+        getItem(ItemHome.class);
+        getItem(ItemLive.class);
+        getItem(ItemMe.class);
+    }
+
+    public static final class ItemHome extends FVisibleLevelItem
+    {
+        @Override
+        public void onCreate()
+        {
+        }
+    }
+
+    public static final class ItemLive extends FVisibleLevelItem
+    {
+        @Override
+        public void onCreate()
+        {
+        }
+    }
+
+    public static final class ItemMe extends FVisibleLevelItem
+    {
+        @Override
+        public void onCreate()
+        {
+        }
     }
 }
