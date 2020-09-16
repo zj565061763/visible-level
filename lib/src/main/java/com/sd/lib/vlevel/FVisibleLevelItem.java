@@ -1,6 +1,5 @@
 package com.sd.lib.vlevel;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -75,6 +74,9 @@ public abstract class FVisibleLevelItem
      */
     public final void setChildLevel(FVisibleLevel level)
     {
+        if (level == mLevel)
+            throw new IllegalArgumentException("child level should not be current level");
+
         mChildLevel = level;
     }
 
@@ -87,23 +89,6 @@ public abstract class FVisibleLevelItem
 
         if (mChildLevel != null)
             mChildLevel.setVisible(visible);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Arrays.hashCode(new Object[]{getClass(), mLevel});
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this) return true;
-        if (obj == null) return false;
-        if (obj.getClass() != getClass()) return false;
-
-        final FVisibleLevelItem other = (FVisibleLevelItem) obj;
-        return mLevel.equals(other.mLevel);
     }
 
     public interface VisibilityCallback
