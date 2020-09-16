@@ -18,7 +18,7 @@ public abstract class FVisibleLevelItem
     /**
      * 创建回调
      */
-    public abstract void onCreate();
+    protected abstract void onCreate();
 
     /**
      * 添加回调，弱引用保存回调对象
