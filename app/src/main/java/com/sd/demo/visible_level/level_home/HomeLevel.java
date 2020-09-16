@@ -6,7 +6,7 @@ import com.sd.lib.vlevel.FVisibleLevelItem;
 public final class HomeLevel extends FVisibleLevel
 {
     @Override
-    public Class<? extends FVisibleLevelItem>[] onCreate()
+    protected Class<? extends FVisibleLevelItem>[] onCreate()
     {
         return new Class[]{
                 ItemHome.class,

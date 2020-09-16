@@ -69,7 +69,7 @@ public abstract class FVisibleLevel
      *
      * @return
      */
-    public abstract Class<? extends FVisibleLevelItem>[] onCreate();
+    protected abstract Class<? extends FVisibleLevelItem>[] onCreate();
 
     /**
      * 返回某个Item
