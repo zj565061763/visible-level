@@ -16,6 +16,10 @@ public abstract class FVisibleLevel
     private boolean mIsVisible = true;
     private FVisibleLevelItem mVisibleItem;
 
+    protected FVisibleLevel()
+    {
+    }
+
     /**
      * 返回某个等级
      *

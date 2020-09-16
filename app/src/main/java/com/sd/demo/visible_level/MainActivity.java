@@ -10,6 +10,12 @@ import com.sd.demo.visible_level.appview.HomeView;
 import com.sd.demo.visible_level.appview.LiveView;
 import com.sd.demo.visible_level.appview.MeView;
 import com.sd.demo.visible_level.databinding.ActivityMainBinding;
+import com.sd.demo.visible_level.level_home.HomeLevel;
+import com.sd.demo.visible_level.level_home.HomeLevelItemHome;
+import com.sd.demo.visible_level.level_home.HomeLevelItemLive;
+import com.sd.demo.visible_level.level_home.HomeLevelItemMe;
+import com.sd.lib.vlevel.FVisibleLevel;
+import com.sd.lib.vlevel.FVisibleLevelItem;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -25,7 +31,7 @@ public class MainActivity extends AppCompatActivity
     private LiveView mLiveView;
     private MeView mMeView;
 
-    private final FVisibleLevelManager.Level mVisibleLevel = FVisibleLevelManager.getDefault().getLevel("home");
+    private final FVisibleLevel mVisibleLevel = FVisibleLevel.get(HomeLevel.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,9 +44,8 @@ public class MainActivity extends AppCompatActivity
         mLiveView = new LiveView(this);
         mMeView = new MeView(this);
 
-        mVisibleLevel.addCallback(mLevelCallback);
+        mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
 
-        initVisibleLevel();
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
@@ -50,15 +55,15 @@ public class MainActivity extends AppCompatActivity
                 switch (checkedId)
                 {
                     case R.id.btn_home:
-                        mVisibleLevel.visibleItem(LEVEL_ITEM_HOME);
+                        mVisibleLevel.visibleItem(HomeLevelItemHome.class);
                         mBinding.flContainer.addView(mHomeView);
                         break;
                     case R.id.btn_live:
-                        mVisibleLevel.visibleItem(LEVEL_ITEM_LIVE);
+                        mVisibleLevel.visibleItem(HomeLevelItemLive.class);
                         mBinding.flContainer.addView(mLiveView);
                         break;
                     case R.id.btn_me:
-                        mVisibleLevel.visibleItem(LEVEL_ITEM_ME);
+                        mVisibleLevel.visibleItem(HomeLevelItemMe.class);
                         mBinding.flContainer.addView(mMeView);
                         break;
                     default:
@@ -70,42 +75,18 @@ public class MainActivity extends AppCompatActivity
         mBinding.radioMenu.check(R.id.btn_home);
     }
 
-    private void initVisibleLevel()
-    {
-        mVisibleLevel.clearItem();
-        mVisibleLevel.addItem(LEVEL_ITEM_HOME);
-        mVisibleLevel.addItem(LEVEL_ITEM_LIVE);
-        mVisibleLevel.addItem(LEVEL_ITEM_ME);
-
-        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_HOME, mHomeView);
-        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_LIVE, mLiveView);
-        mVisibleLevel.addLevelItemCallback(LEVEL_ITEM_ME, mMeView);
-    }
-
-    private final FVisibleLevelManager.LevelCallback mLevelCallback = new FVisibleLevelManager.LevelCallback()
+    private final FVisibleLevel.VisibilityCallback mVisibilityCallback = new FVisibleLevel.VisibilityCallback()
     {
         @Override
-        public void onLevelVisibilityChanged(boolean visible, FVisibleLevelManager.Level level)
+        public void onLevelVisibilityChanged(boolean visible, FVisibleLevel level)
         {
-            Log.i(TAG, "onLevelVisibilityChanged visible:" + visible + " level:" + level.getName());
+            Log.i(TAG, "onLevelVisibilityChanged visible:" + visible + " level:" + level);
         }
 
         @Override
-        public void onItemAdded(FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
+        public void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item, FVisibleLevel level)
         {
-            Log.i(TAG, "onItemAdded item:" + item.getName() + " level:" + level.getName());
-        }
-
-        @Override
-        public void onItemRemoved(FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
-        {
-            Log.i(TAG, "onItemRemoved item:" + item.getName() + " level:" + level.getName());
-        }
-
-        @Override
-        public void onItemVisibilityChanged(boolean visible, FVisibleLevelManager.LevelItem item, FVisibleLevelManager.Level level)
-        {
-            Log.i(TAG, "onItemVisibilityChanged visible:" + visible + " item:" + item.getName() + " level:" + level.getName());
+            Log.i(TAG, "onLevelItemVisibilityChanged visible:" + visible + " item:" + item + " level:" + level);
         }
     };
 }

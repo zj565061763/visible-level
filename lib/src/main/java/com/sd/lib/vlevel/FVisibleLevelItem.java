@@ -13,11 +13,15 @@ public abstract class FVisibleLevelItem
 
     private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
 
-    private FVisibleLevelItem(FVisibleLevel level)
+    protected FVisibleLevelItem()
+    {
+        this(null);
+    }
+
+    FVisibleLevelItem(FVisibleLevel level)
     {
         if (level == null)
             throw new NullPointerException("level is null");
-
         mLevel = level;
     }
 
@@ -85,6 +89,11 @@ public abstract class FVisibleLevelItem
 
     void notifyVisibility(boolean visible)
     {
+        for (VisibilityCallback callback : getVisibilityCallbacks())
+        {
+            callback.onLevelItemVisibilityChanged(visible, FVisibleLevelItem.this);
+        }
+
         if (mChildLevel != null)
             mChildLevel.setVisible(visible);
     }
