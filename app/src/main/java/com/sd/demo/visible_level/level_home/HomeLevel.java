@@ -8,9 +8,7 @@ public final class HomeLevel extends FVisibleLevel
     @Override
     public void onCreate()
     {
-        getItem(ItemHome.class);
-        getItem(ItemLive.class);
-        getItem(ItemMe.class);
+        initItem(ItemHome.class, ItemLive.class, ItemMe.class);
     }
 
     public static final class ItemHome extends FVisibleLevelItem

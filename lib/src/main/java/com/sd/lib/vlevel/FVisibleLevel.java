@@ -46,7 +46,7 @@ public abstract class FVisibleLevel
     /**
      * 清空所有等级
      */
-    public static synchronized void clear()
+    public static synchronized void clearLevel()
     {
         MAP_LEVEL.clear();
     }
@@ -57,26 +57,44 @@ public abstract class FVisibleLevel
     public abstract void onCreate();
 
     /**
+     * 初始化Item
+     *
+     * @param classes
+     */
+    protected final void initItem(Class<? extends FVisibleLevelItem>... classes)
+    {
+        if (classes == null || classes.length <= 0)
+            throw new IllegalArgumentException("classes is null or empty");
+
+        for (Class<? extends FVisibleLevelItem> clazz : classes)
+        {
+            checkLevelItemClass(clazz);
+            if (mMapLevelItem.containsKey(clazz))
+                continue;
+
+            final FVisibleLevelItem item = createLevelItem(clazz);
+            if (item == null)
+                throw new RuntimeException("create level item failed " + clazz.getName());
+
+            mMapLevelItem.put(clazz, item);
+            item.onCreate();
+        }
+    }
+
+    /**
      * 返回某个Item
      *
      * @param clazz
      * @return
      */
-    public FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
+    public final FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
     {
         checkLevelItemClass(clazz);
 
-        FVisibleLevelItem item = mMapLevelItem.get(clazz);
+        final FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
-        {
-            item = createLevelItem(clazz);
-            if (item == null)
-                throw new RuntimeException("create level item failed " + clazz.getName());
+            throw new RuntimeException("Item was not found in level " + FVisibleLevel.this);
 
-            item.mLevel = FVisibleLevel.this;
-            mMapLevelItem.put(clazz, item);
-            item.onCreate();
-        }
         return item;
     }
 
