@@ -6,9 +6,13 @@ import com.sd.lib.vlevel.FVisibleLevelItem;
 public final class HomeLevel extends FVisibleLevel
 {
     @Override
-    public void onCreate()
+    public Class<? extends FVisibleLevelItem>[] onCreate()
     {
-        initItem(ItemHome.class, ItemLive.class, ItemMe.class);
+        return new Class[]{
+                ItemHome.class,
+                ItemLive.class,
+                ItemMe.class,
+        };
     }
 
     public static final class ItemHome extends FVisibleLevelItem

@@ -28,7 +28,11 @@ public abstract class FVisibleLevel
      */
     public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz)
     {
-        checkLevelClass(clazz);
+        if (clazz == null)
+            throw new NullPointerException("clazz is null");
+
+        if (clazz == FVisibleLevel.class)
+            throw new IllegalArgumentException("clazz is " + clazz.getName());
 
         FVisibleLevel level = MAP_LEVEL.get(clazz);
         if (level == null)
@@ -37,8 +41,17 @@ public abstract class FVisibleLevel
             if (level == null)
                 throw new RuntimeException("create level failed " + clazz.getName());
 
+            final Class<? extends FVisibleLevelItem>[] classes = level.onCreate();
+            if (classes == null || classes.length <= 0)
+                throw new RuntimeException("level onCreate() return null or empty " + clazz.getName());
+
+            for (Class<? extends FVisibleLevelItem> itemClass : classes)
+            {
+                checkLevelItemClass(itemClass);
+                level.mMapLevelItem.put(itemClass, InternalItem.DEFAULT);
+            }
+
             MAP_LEVEL.put(clazz, level);
-            level.onCreate();
         }
         return level;
     }
@@ -53,26 +66,10 @@ public abstract class FVisibleLevel
 
     /**
      * 创建回调
-     */
-    public abstract void onCreate();
-
-    /**
-     * 初始化Item
      *
-     * @param classes
+     * @return
      */
-    protected final synchronized void initItem(Class<? extends FVisibleLevelItem>... classes)
-    {
-        if (classes == null || classes.length <= 0)
-            throw new IllegalArgumentException("classes is null or empty");
-
-        mMapLevelItem.clear();
-        for (Class<? extends FVisibleLevelItem> clazz : classes)
-        {
-            checkLevelItemClass(clazz);
-            mMapLevelItem.put(clazz, InternalItem.DEFAULT);
-        }
-    }
+    public abstract Class<? extends FVisibleLevelItem>[] onCreate();
 
     /**
      * 返回某个Item
@@ -251,15 +248,6 @@ public abstract class FVisibleLevel
         return null;
     }
 
-    private static void checkLevelClass(Class<? extends FVisibleLevel> clazz)
-    {
-        if (clazz == null)
-            throw new NullPointerException("clazz is null");
-
-        if (clazz == FVisibleLevel.class)
-            throw new IllegalArgumentException("clazz is " + clazz.getName());
-    }
-
     private static void checkLevelItemClass(Class<? extends FVisibleLevelItem> clazz)
     {
         if (clazz == null)
@@ -267,6 +255,9 @@ public abstract class FVisibleLevel
 
         if (clazz == FVisibleLevelItem.class)
             throw new IllegalArgumentException("clazz is " + clazz.getName());
+
+        if (!FVisibleLevelItem.class.isAssignableFrom(clazz))
+            throw new IllegalArgumentException(FVisibleLevelItem.class.getName() + " is not assignable from " + clazz.getName());
     }
 
     static final class InternalItem extends FVisibleLevelItem
