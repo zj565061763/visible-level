@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity
         mMeView = new MeView(this);
 
         mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
-        mVisibleLevel.getItem(LevelHome.ItemHome.class).addVisibilityCallback(mHomeView);
-        mVisibleLevel.getItem(LevelHome.ItemLive.class).addVisibilityCallback(mLiveView);
-        mVisibleLevel.getItem(LevelHome.ItemMe.class).addVisibilityCallback(mMeView);
+        mVisibleLevel.getItem(LevelHome.ITEM_HOME).addVisibilityCallback(mHomeView);
+        mVisibleLevel.getItem(LevelHome.ITEM_LIVE).addVisibilityCallback(mLiveView);
+        mVisibleLevel.getItem(LevelHome.ITEM_ME).addVisibilityCallback(mMeView);
 
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -55,15 +55,15 @@ public class MainActivity extends AppCompatActivity
                 switch (checkedId)
                 {
                     case R.id.btn_home:
-                        mVisibleLevel.visibleItem(LevelHome.ItemHome.class);
+                        mVisibleLevel.visibleItem(LevelHome.ITEM_HOME);
                         mBinding.flContainer.addView(mHomeView);
                         break;
                     case R.id.btn_live:
-                        mVisibleLevel.visibleItem(LevelHome.ItemLive.class);
+                        mVisibleLevel.visibleItem(LevelHome.ITEM_LIVE);
                         mBinding.flContainer.addView(mLiveView);
                         break;
                     case R.id.btn_me:
-                        mVisibleLevel.visibleItem(LevelHome.ItemMe.class);
+                        mVisibleLevel.visibleItem(LevelHome.ITEM_ME);
                         mBinding.flContainer.addView(mMeView);
                         break;
                     default:

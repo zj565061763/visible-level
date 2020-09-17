@@ -27,7 +27,7 @@ public class BaseAppView extends FrameLayout implements FVisibleLevelItem.Visibi
     public void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item)
     {
         Log.i(MainActivity.TAG, "AppView onLevelItemVisibilityChanged visible:" + visible
-                + " item:" + item
+                + " item:" + item.getName()
                 + " view:" + this);
     }
 }

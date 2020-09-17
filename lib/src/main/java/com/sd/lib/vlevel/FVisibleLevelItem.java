@@ -5,27 +5,26 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public abstract class FVisibleLevelItem
+public final class FVisibleLevelItem
 {
-    FVisibleLevel mLevel;
+    private final String mName;
+    private final FVisibleLevel mLevel;
+
     private FVisibleLevel mChildLevel;
     private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
 
-    protected FVisibleLevelItem()
+    FVisibleLevelItem(String name, FVisibleLevel level)
     {
+        mName = name;
+        mLevel = level;
     }
-
-    /**
-     * 创建回调
-     */
-    protected abstract void onCreate();
 
     /**
      * 添加回调，弱引用保存回调对象
      *
      * @param callback
      */
-    public final void addVisibilityCallback(VisibilityCallback callback)
+    public void addVisibilityCallback(VisibilityCallback callback)
     {
         if (callback != null)
             mVisibilityCallbackHolder.put(callback, "");
@@ -36,7 +35,7 @@ public abstract class FVisibleLevelItem
      *
      * @param callback
      */
-    public final void removeVisibilityCallback(VisibilityCallback callback)
+    public void removeVisibilityCallback(VisibilityCallback callback)
     {
         if (callback != null)
             mVisibilityCallbackHolder.remove(callback);
@@ -48,11 +47,21 @@ public abstract class FVisibleLevelItem
     }
 
     /**
+     * Item名称
+     *
+     * @return
+     */
+    public String getName()
+    {
+        return mName;
+    }
+
+    /**
      * 返回Item所在的等级
      *
      * @return
      */
-    public final FVisibleLevel getLevel()
+    public FVisibleLevel getLevel()
     {
         return mLevel;
     }
@@ -62,7 +71,7 @@ public abstract class FVisibleLevelItem
      *
      * @return
      */
-    public final boolean isVisible()
+    public boolean isVisible()
     {
         return getLevel().isVisible() && this.equals(getLevel().getVisibleItem());
     }
@@ -72,7 +81,7 @@ public abstract class FVisibleLevelItem
      *
      * @param level
      */
-    public final void setChildLevel(FVisibleLevel level)
+    public void setChildLevel(FVisibleLevel level)
     {
         if (level == mLevel)
             throw new IllegalArgumentException("child level should not be current level");

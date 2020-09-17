@@ -1,5 +1,6 @@
 package com.sd.lib.vlevel;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.Collection;
@@ -12,7 +13,8 @@ public abstract class FVisibleLevel
 {
     private static final Map<Class<? extends FVisibleLevel>, FVisibleLevel> MAP_LEVEL = new ConcurrentHashMap<>();
 
-    private final Map<Class<? extends FVisibleLevelItem>, FVisibleLevelItem> mMapLevelItem = new ConcurrentHashMap<>();
+    private static final FVisibleLevelItem EMPTY_ITEM = new FVisibleLevelItem(null, null);
+    private final Map<String, FVisibleLevelItem> mMapLevelItem = new ConcurrentHashMap<>();
     private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
 
     private boolean mIsVisible = true;
@@ -50,28 +52,10 @@ public abstract class FVisibleLevel
             if (level == null)
                 throw new RuntimeException("create level failed " + clazz.getName());
 
-            final Class<? extends FVisibleLevelItem>[] classes = level.onCreate();
-            if (classes == null || classes.length <= 0)
-                throw new RuntimeException("level onCreate() return null or empty " + clazz.getName());
-
-            for (Class<? extends FVisibleLevelItem> itemClass : classes)
-            {
-                checkLevelItemClass(itemClass);
-                level.mMapLevelItem.put(itemClass, InternalItem.DEFAULT);
-            }
+            final String[] items = level.onCreate();
+            level.initItems(items);
 
             MAP_LEVEL.put(clazz, level);
-
-            if (sIsDebug)
-            {
-                final StringBuilder builder = new StringBuilder("+++++ ");
-                builder.append(clazz.getName()).append(" create").append("\r\n");
-                for (Class<? extends FVisibleLevelItem> itemClass : classes)
-                {
-                    builder.append("item:").append(itemClass.getName()).append("\r\n");
-                }
-                Log.i(FVisibleLevel.class.getSimpleName(), builder.toString());
-            }
         }
         return level;
     }
@@ -92,39 +76,75 @@ public abstract class FVisibleLevel
      *
      * @return
      */
-    protected abstract Class<? extends FVisibleLevelItem>[] onCreate();
+    protected abstract String[] onCreate();
+
+    /**
+     * 创建Item回调
+     *
+     * @param item
+     */
+    protected abstract void onCreateItem(FVisibleLevelItem item);
+
+    /**
+     * 初始化Item
+     *
+     * @param items
+     */
+    private void initItems(String[] items)
+    {
+        if (items == null || items.length <= 0)
+            throw new RuntimeException("items is null or empty " + getClass().getName());
+
+        mMapLevelItem.clear();
+        for (String item : items)
+        {
+            if (TextUtils.isEmpty(item))
+                throw new RuntimeException("item is empty");
+
+            mMapLevelItem.put(item, EMPTY_ITEM);
+        }
+
+        if (sIsDebug)
+        {
+            final StringBuilder builder = new StringBuilder("+++++ ");
+            builder.append(getClass().getName()).append(" initItems").append("\r\n");
+            for (String item : items)
+            {
+                builder.append(item).append("\r\n");
+            }
+            Log.i(FVisibleLevel.class.getSimpleName(), builder.toString());
+        }
+    }
 
     /**
      * 返回某个Item
      *
-     * @param clazz
+     * @param name
      * @return
      */
-    public final FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
+    public final FVisibleLevelItem getItem(String name)
     {
-        return getOrCreateItem(clazz);
+        return getOrCreateItem(name);
     }
 
-    private FVisibleLevelItem getOrCreateItem(Class<? extends FVisibleLevelItem> clazz)
+    private FVisibleLevelItem getOrCreateItem(String name)
     {
-        checkLevelItemClass(clazz);
+        if (TextUtils.isEmpty(name))
+            throw new RuntimeException("name is empty");
 
-        FVisibleLevelItem item = mMapLevelItem.get(clazz);
+        FVisibleLevelItem item = mMapLevelItem.get(name);
         if (item == null)
-            throw new RuntimeException("Item " + clazz.getName() + " was not found in level " + FVisibleLevel.this);
+            throw new RuntimeException("Item " + name + " was not found in level " + FVisibleLevel.this);
 
-        if (item == InternalItem.DEFAULT)
+        if (item == EMPTY_ITEM)
         {
-            item = createLevelItem(clazz);
-            if (item == null)
-                throw new RuntimeException("create level item failed " + clazz.getName());
-
-            mMapLevelItem.put(clazz, item);
+            item = new FVisibleLevelItem(name, FVisibleLevel.this);
+            mMapLevelItem.put(name, item);
 
             if (sIsDebug)
-                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create levelItem:" + clazz.getName());
+                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create levelItem:" + name);
 
-            item.onCreate();
+            onCreateItem(item);
         }
         return item;
     }
@@ -200,17 +220,17 @@ public abstract class FVisibleLevel
     /**
      * 设置Item可见
      *
-     * @param clazz
+     * @param name
      */
-    public final void visibleItem(Class<? extends FVisibleLevelItem> clazz)
+    public final void visibleItem(String name)
     {
         if (!mIsVisible)
             throw new RuntimeException("level is not visible:" + getClass().getName());
 
         if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + clazz.getName());
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name);
 
-        final FVisibleLevelItem item = getOrCreateItem(clazz);
+        final FVisibleLevelItem item = getOrCreateItem(name);
         final FVisibleLevelItem old = mVisibleItem;
         if (old != item)
         {
@@ -251,14 +271,14 @@ public abstract class FVisibleLevel
             return;
 
         if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItemInternal visible:" + visible + " item:" + item.getClass().getName());
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItemInternal visible:" + visible + " item:" + item.getName());
 
-        if (mMapLevelItem.containsKey(item.getClass()))
+        if (mMapLevelItem.containsKey(item.getName()))
         {
             item.notifyVisibility(visible);
         } else
         {
-            throw new RuntimeException("Item " + item.getClass().getName() + " was not found in level " + FVisibleLevel.this);
+            throw new RuntimeException("Item " + item.getName() + " was not found in level " + FVisibleLevel.this);
         }
     }
 
@@ -275,43 +295,6 @@ public abstract class FVisibleLevel
             e.printStackTrace();
         }
         return null;
-    }
-
-    private static FVisibleLevelItem createLevelItem(Class<? extends FVisibleLevelItem> clazz)
-    {
-        try
-        {
-            return clazz.newInstance();
-        } catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-        } catch (InstantiationException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static void checkLevelItemClass(Class<? extends FVisibleLevelItem> clazz)
-    {
-        if (clazz == null)
-            throw new NullPointerException("clazz is null");
-
-        if (clazz == FVisibleLevelItem.class)
-            throw new IllegalArgumentException("clazz is " + clazz.getName());
-
-        if (!FVisibleLevelItem.class.isAssignableFrom(clazz))
-            throw new IllegalArgumentException(FVisibleLevelItem.class.getName() + " is not assignable from " + clazz.getName());
-    }
-
-    static final class InternalItem extends FVisibleLevelItem
-    {
-        public static final InternalItem DEFAULT = new InternalItem();
-
-        @Override
-        public void onCreate()
-        {
-        }
     }
 
     public interface VisibilityCallback

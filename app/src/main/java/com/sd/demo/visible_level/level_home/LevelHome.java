@@ -5,37 +5,23 @@ import com.sd.lib.vlevel.FVisibleLevelItem;
 
 public final class LevelHome extends FVisibleLevel
 {
+    public static final String ITEM_HOME = "item_home";
+    public static final String ITEM_LIVE = "item_live";
+    public static final String ITEM_ME = "item_me";
+
     @Override
-    protected Class<? extends FVisibleLevelItem>[] onCreate()
+    protected String[] onCreate()
     {
-        return new Class[]{
-                ItemHome.class,
-                ItemLive.class,
-                ItemMe.class,
+        return new String[]{
+                ITEM_HOME,
+                ITEM_LIVE,
+                ITEM_ME,
         };
     }
 
-    public static final class ItemHome extends FVisibleLevelItem
+    @Override
+    protected void onCreateItem(FVisibleLevelItem item)
     {
-        @Override
-        public void onCreate()
-        {
-        }
-    }
 
-    public static final class ItemLive extends FVisibleLevelItem
-    {
-        @Override
-        public void onCreate()
-        {
-        }
-    }
-
-    public static final class ItemMe extends FVisibleLevelItem
-    {
-        @Override
-        public void onCreate()
-        {
-        }
     }
 }
