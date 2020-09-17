@@ -77,7 +77,7 @@ public abstract class FVisibleLevel
      * @param clazz
      * @return
      */
-    public final synchronized FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
+    public final FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
     {
         checkLevelItemClass(clazz);
 
@@ -193,7 +193,7 @@ public abstract class FVisibleLevel
     /**
      * 设置当前可见的Item为不可见
      */
-    public final void invisibleItem()
+    public final void invisibleCurrentItem()
     {
         visibleItemInternal(false, mVisibleItem);
         mVisibleItem = null;
@@ -202,7 +202,7 @@ public abstract class FVisibleLevel
     /**
      * 通知可见Item
      */
-    public final void notifyVisibleItem()
+    public final void notifyCurrentVisibleItem()
     {
         visibleItemInternal(true, mVisibleItem);
     }
