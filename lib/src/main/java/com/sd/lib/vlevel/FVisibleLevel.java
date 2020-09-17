@@ -83,7 +83,7 @@ public abstract class FVisibleLevel
 
         FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
-            throw new RuntimeException("Item was not found in level " + FVisibleLevel.this);
+            throw new RuntimeException("Item " + clazz.getName() + " was not found in level " + FVisibleLevel.this);
 
         if (item == InternalItem.DEFAULT)
         {
@@ -177,7 +177,7 @@ public abstract class FVisibleLevel
 
         final FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
-            throw new RuntimeException("Item was not found in level " + FVisibleLevel.this);
+            throw new RuntimeException("Item " + clazz.getName() + " was not found in level " + FVisibleLevel.this);
 
         final FVisibleLevelItem old = mVisibleItem;
         if (!item.equals(old))
@@ -215,6 +215,9 @@ public abstract class FVisibleLevel
         if (mMapLevelItem.containsKey(item.getClass()))
         {
             item.notifyVisibility(visible);
+        } else
+        {
+            throw new RuntimeException("Item " + item.getClass().getName() + " was not found in level " + FVisibleLevel.this);
         }
     }
 
