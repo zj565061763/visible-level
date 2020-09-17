@@ -241,29 +241,6 @@ public abstract class FVisibleLevel
         }
     }
 
-    /**
-     * 设置当前可见的Item为不可见
-     */
-    public final void invisibleCurrentItem()
-    {
-        if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " invisibleCurrentItem");
-
-        visibleItemInternal(false, mVisibleItem);
-        mVisibleItem = null;
-    }
-
-    /**
-     * 通知可见Item
-     */
-    public final void notifyCurrentVisibleItem()
-    {
-        if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyCurrentVisibleItem");
-
-        visibleItemInternal(true, mVisibleItem);
-    }
-
     private void visibleItemInternal(boolean visible, FVisibleLevelItem item)
     {
         if (item == null)
