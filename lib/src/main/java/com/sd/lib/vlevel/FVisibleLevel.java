@@ -224,21 +224,20 @@ public abstract class FVisibleLevel
      */
     public final void visibleItem(String name)
     {
-        if (!mIsVisible)
-            throw new RuntimeException("level is not visible:" + getClass().getName());
-
         if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name);
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name + " levelVisible:" + mIsVisible);
 
         final FVisibleLevelItem item = getOrCreateItem(name);
         final FVisibleLevelItem old = mVisibleItem;
         if (old != item)
         {
+            mVisibleItem = item;
+
             if (old != null)
                 visibleItemInternal(false, old);
 
-            mVisibleItem = item;
-            visibleItemInternal(true, item);
+            if (mIsVisible)
+                visibleItemInternal(true, item);
         }
     }
 
