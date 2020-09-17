@@ -67,10 +67,10 @@ public abstract class FVisibleLevel
      */
     public static synchronized void clearLevel()
     {
-        MAP_LEVEL.clear();
-
         if (sIsDebug)
             Log.i(FVisibleLevel.class.getSimpleName(), "clearLevel");
+
+        MAP_LEVEL.clear();
     }
 
     /**

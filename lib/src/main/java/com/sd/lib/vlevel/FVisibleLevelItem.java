@@ -73,7 +73,7 @@ public final class FVisibleLevelItem
      */
     public boolean isVisible()
     {
-        return getLevel().isVisible() && this.equals(getLevel().getVisibleItem());
+        return getLevel().isVisible() && getLevel().getVisibleItem() == this;
     }
 
     /**
