@@ -15,11 +15,12 @@ import com.sd.lib.vlevel.FVisibleLevel;
 
 public class MainActivity extends AppCompatActivity
 {
-    public static final String TAG = MainActivity.class.getSimpleName();
+    static
+    {
+        FVisibleLevel.setDebug(true);
+    }
 
-    private static final String LEVEL_ITEM_HOME = HomeView.class.getName();
-    private static final String LEVEL_ITEM_LIVE = LiveView.class.getName();
-    private static final String LEVEL_ITEM_ME = MeView.class.getName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
 

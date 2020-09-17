@@ -1,5 +1,7 @@
 package com.sd.lib.vlevel;
 
+import android.util.Log;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -16,8 +18,15 @@ public abstract class FVisibleLevel
     private boolean mIsVisible = true;
     private FVisibleLevelItem mVisibleItem;
 
+    private static boolean sIsDebug;
+
     protected FVisibleLevel()
     {
+    }
+
+    public static void setDebug(boolean isDebug)
+    {
+        sIsDebug = isDebug;
     }
 
     /**
@@ -52,6 +61,17 @@ public abstract class FVisibleLevel
             }
 
             MAP_LEVEL.put(clazz, level);
+
+            if (sIsDebug)
+            {
+                final StringBuilder builder = new StringBuilder("+++++ ");
+                builder.append(clazz.getName()).append(" create").append("\r\n");
+                for (Class<? extends FVisibleLevelItem> itemClass : classes)
+                {
+                    builder.append("item:").append(itemClass.getName()).append("\r\n");
+                }
+                Log.i(FVisibleLevel.class.getSimpleName(), builder.toString());
+            }
         }
         return level;
     }
@@ -62,6 +82,9 @@ public abstract class FVisibleLevel
     public static synchronized void clearLevel()
     {
         MAP_LEVEL.clear();
+
+        if (sIsDebug)
+            Log.i(FVisibleLevel.class.getSimpleName(), "clearLevel");
     }
 
     /**
@@ -97,6 +120,10 @@ public abstract class FVisibleLevel
                 throw new RuntimeException("create level item failed " + clazz.getName());
 
             mMapLevelItem.put(clazz, item);
+
+            if (sIsDebug)
+                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create levelItem:" + clazz.getName());
+
             item.onCreate();
         }
         return item;
@@ -159,6 +186,8 @@ public abstract class FVisibleLevel
         if (mIsVisible != visible)
         {
             mIsVisible = visible;
+            if (sIsDebug)
+                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " setVisible:" + visible);
 
             for (VisibilityCallback callback : getVisibilityCallbacks())
             {
@@ -182,6 +211,9 @@ public abstract class FVisibleLevel
         final FVisibleLevelItem old = mVisibleItem;
         if (old != item)
         {
+            if (sIsDebug)
+                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + clazz.getName());
+
             if (old != null)
                 visibleItemInternal(false, old);
 
@@ -195,6 +227,9 @@ public abstract class FVisibleLevel
      */
     public final void invisibleCurrentItem()
     {
+        if (sIsDebug)
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " invisibleCurrentItem");
+
         visibleItemInternal(false, mVisibleItem);
         mVisibleItem = null;
     }
@@ -204,6 +239,9 @@ public abstract class FVisibleLevel
      */
     public final void notifyCurrentVisibleItem()
     {
+        if (sIsDebug)
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyCurrentVisibleItem");
+
         visibleItemInternal(true, mVisibleItem);
     }
 
@@ -211,6 +249,9 @@ public abstract class FVisibleLevel
     {
         if (item == null)
             return;
+
+        if (sIsDebug)
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItemInternal visible:" + visible + " item:" + item.getClass().getName());
 
         if (mMapLevelItem.containsKey(item.getClass()))
         {
