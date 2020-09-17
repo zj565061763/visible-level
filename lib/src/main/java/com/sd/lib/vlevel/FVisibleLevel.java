@@ -142,7 +142,7 @@ public abstract class FVisibleLevel
             mMapLevelItem.put(name, item);
 
             if (sIsDebug)
-                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create levelItem:" + name);
+                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create item:" + name);
 
             onCreateItem(item);
         }
