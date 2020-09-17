@@ -52,10 +52,12 @@ public abstract class FVisibleLevel
             if (level == null)
                 throw new RuntimeException("create level failed " + clazz.getName());
 
-            final String[] items = level.onCreate();
-            level.initItems(items);
-
             MAP_LEVEL.put(clazz, level);
+
+            if (sIsDebug)
+                Log.i(FVisibleLevel.class.getSimpleName(), clazz.getName() + " create +++++");
+
+            level.onCreate();
         }
         return level;
     }
@@ -73,10 +75,8 @@ public abstract class FVisibleLevel
 
     /**
      * 创建回调
-     *
-     * @return
      */
-    protected abstract String[] onCreate();
+    protected abstract void onCreate();
 
     /**
      * 创建Item回调
@@ -90,7 +90,7 @@ public abstract class FVisibleLevel
      *
      * @param items
      */
-    private void initItems(String[] items)
+    public void initItems(String[] items)
     {
         if (items == null || items.length <= 0)
             throw new RuntimeException("items is null or empty " + getClass().getName());
@@ -106,7 +106,7 @@ public abstract class FVisibleLevel
 
         if (sIsDebug)
         {
-            final StringBuilder builder = new StringBuilder("+++++ ");
+            final StringBuilder builder = new StringBuilder();
             builder.append(getClass().getName()).append(" initItems").append("\r\n");
             for (String item : items)
             {

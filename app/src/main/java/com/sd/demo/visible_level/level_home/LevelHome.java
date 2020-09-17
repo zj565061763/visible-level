@@ -10,13 +10,13 @@ public final class LevelHome extends FVisibleLevel
     public static final String ITEM_ME = "item_me";
 
     @Override
-    protected String[] onCreate()
+    protected void onCreate()
     {
-        return new String[]{
+        initItems(new String[]{
                 ITEM_HOME,
                 ITEM_LIVE,
                 ITEM_ME,
-        };
+        });
     }
 
     @Override
