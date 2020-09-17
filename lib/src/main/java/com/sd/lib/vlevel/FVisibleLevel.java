@@ -207,13 +207,13 @@ public abstract class FVisibleLevel
         if (!mIsVisible)
             throw new RuntimeException("level is not visible:" + getClass().getName());
 
+        if (sIsDebug)
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + clazz.getName());
+
         final FVisibleLevelItem item = getOrCreateItem(clazz);
         final FVisibleLevelItem old = mVisibleItem;
         if (old != item)
         {
-            if (sIsDebug)
-                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + clazz.getName());
-
             if (old != null)
                 visibleItemInternal(false, old);
 
