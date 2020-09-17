@@ -213,7 +213,7 @@ public abstract class FVisibleLevel
             {
                 callback.onLevelVisibilityChanged(visible, FVisibleLevel.this);
             }
-            visibleItemInternal(visible, mVisibleItem);
+            notifyItemVisibility(visible, mVisibleItem);
         }
     }
 
@@ -234,20 +234,20 @@ public abstract class FVisibleLevel
             mVisibleItem = item;
 
             if (old != null)
-                visibleItemInternal(false, old);
+                notifyItemVisibility(false, old);
 
             if (mIsVisible)
-                visibleItemInternal(true, item);
+                notifyItemVisibility(true, item);
         }
     }
 
-    private void visibleItemInternal(boolean visible, FVisibleLevelItem item)
+    private void notifyItemVisibility(boolean visible, FVisibleLevelItem item)
     {
         if (item == null)
             return;
 
         if (sIsDebug)
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItemInternal visible:" + visible + " item:" + item.getName());
+            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyItemVisibility visible:" + visible + " item:" + item.getName());
 
         if (mMapLevelItem.containsKey(item.getName()))
         {
