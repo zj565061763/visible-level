@@ -79,6 +79,11 @@ public abstract class FVisibleLevel
      */
     public final FVisibleLevelItem getItem(Class<? extends FVisibleLevelItem> clazz)
     {
+        return getOrCreateItem(clazz);
+    }
+
+    private FVisibleLevelItem getOrCreateItem(Class<? extends FVisibleLevelItem> clazz)
+    {
         checkLevelItemClass(clazz);
 
         FVisibleLevelItem item = mMapLevelItem.get(clazz);
@@ -170,17 +175,12 @@ public abstract class FVisibleLevel
      */
     public final void visibleItem(Class<? extends FVisibleLevelItem> clazz)
     {
-        checkLevelItemClass(clazz);
-
         if (!mIsVisible)
             throw new RuntimeException("level is not visible:" + getClass().getName());
 
-        final FVisibleLevelItem item = mMapLevelItem.get(clazz);
-        if (item == null)
-            throw new RuntimeException("Item " + clazz.getName() + " was not found in level " + FVisibleLevel.this);
-
+        final FVisibleLevelItem item = getOrCreateItem(clazz);
         final FVisibleLevelItem old = mVisibleItem;
-        if (!item.equals(old))
+        if (old != item)
         {
             if (old != null)
                 visibleItemInternal(false, old);
