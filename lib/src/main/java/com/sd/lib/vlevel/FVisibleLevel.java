@@ -177,7 +177,7 @@ public abstract class FVisibleLevel
 
         final FVisibleLevelItem item = mMapLevelItem.get(clazz);
         if (item == null)
-            return;
+            throw new RuntimeException("Item was not found in level " + FVisibleLevel.this);
 
         final FVisibleLevelItem old = mVisibleItem;
         if (!item.equals(old))
