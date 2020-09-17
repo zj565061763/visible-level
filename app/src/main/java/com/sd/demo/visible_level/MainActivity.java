@@ -10,7 +10,7 @@ import com.sd.demo.visible_level.appview.HomeView;
 import com.sd.demo.visible_level.appview.LiveView;
 import com.sd.demo.visible_level.appview.MeView;
 import com.sd.demo.visible_level.databinding.ActivityMainBinding;
-import com.sd.demo.visible_level.level_home.HomeLevel;
+import com.sd.demo.visible_level.level_home.LevelHome;
 import com.sd.lib.vlevel.FVisibleLevel;
 
 public class MainActivity extends AppCompatActivity
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity
     private LiveView mLiveView;
     private MeView mMeView;
 
-    private final FVisibleLevel mVisibleLevel = FVisibleLevel.get(HomeLevel.class);
+    private final FVisibleLevel mVisibleLevel = FVisibleLevel.get(LevelHome.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity
         mMeView = new MeView(this);
 
         mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
-        mVisibleLevel.getItem(HomeLevel.ItemHome.class).addVisibilityCallback(mHomeView);
-        mVisibleLevel.getItem(HomeLevel.ItemLive.class).addVisibilityCallback(mLiveView);
-        mVisibleLevel.getItem(HomeLevel.ItemMe.class).addVisibilityCallback(mMeView);
+        mVisibleLevel.getItem(LevelHome.ItemHome.class).addVisibilityCallback(mHomeView);
+        mVisibleLevel.getItem(LevelHome.ItemLive.class).addVisibilityCallback(mLiveView);
+        mVisibleLevel.getItem(LevelHome.ItemMe.class).addVisibilityCallback(mMeView);
 
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -54,15 +54,15 @@ public class MainActivity extends AppCompatActivity
                 switch (checkedId)
                 {
                     case R.id.btn_home:
-                        mVisibleLevel.visibleItem(HomeLevel.ItemHome.class);
+                        mVisibleLevel.visibleItem(LevelHome.ItemHome.class);
                         mBinding.flContainer.addView(mHomeView);
                         break;
                     case R.id.btn_live:
-                        mVisibleLevel.visibleItem(HomeLevel.ItemLive.class);
+                        mVisibleLevel.visibleItem(LevelHome.ItemLive.class);
                         mBinding.flContainer.addView(mLiveView);
                         break;
                     case R.id.btn_me:
-                        mVisibleLevel.visibleItem(HomeLevel.ItemMe.class);
+                        mVisibleLevel.visibleItem(LevelHome.ItemMe.class);
                         mBinding.flContainer.addView(mMeView);
                         break;
                     default:
