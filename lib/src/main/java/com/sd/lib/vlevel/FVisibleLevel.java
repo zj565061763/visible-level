@@ -241,6 +241,15 @@ public abstract class FVisibleLevel
         }
     }
 
+    /**
+     * 通知可见的Item
+     */
+    public final void notifyVisibleItem()
+    {
+        if (mIsVisible)
+            notifyItemVisibility(true, mVisibleItem);
+    }
+
     private void notifyItemVisibility(boolean visible, FVisibleLevelItem item)
     {
         if (item == null)
