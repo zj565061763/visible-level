@@ -1,257 +1,244 @@
-package com.sd.lib.vlevel;
+package com.sd.lib.vlevel
 
-import android.text.TextUtils;
-import android.util.Log;
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
+abstract class FVisibleLevel protected constructor() {
+    private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
+    private val _visibilityCallbackHolder = WeakHashMap<VisibilityCallback, String>()
 
-public abstract class FVisibleLevel {
-    private static final Map<Class<? extends FVisibleLevel>, FVisibleLevel> MAP_LEVEL = new ConcurrentHashMap<>();
-
-    private static final FVisibleLevelItem EMPTY_ITEM = new FVisibleLevelItem(null, null);
-    private final Map<String, FVisibleLevelItem> mMapLevelItem = new ConcurrentHashMap<>();
-    private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
-
-    private boolean mIsVisible = true;
-    private FVisibleLevelItem mVisibleItem;
-
-    private static boolean sIsDebug;
-
-    protected FVisibleLevel() {
-    }
-
-    public static void setDebug(boolean isDebug) {
-        sIsDebug = isDebug;
-    }
+    private var _isActive = false
 
     /**
-     * 返回某个等级
+     * 当前Item
      */
-    public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz) {
-        if (clazz == null) {
-            throw new NullPointerException("clazz is null");
-        }
-
-        if (clazz == FVisibleLevel.class) {
-            throw new IllegalArgumentException("clazz is " + clazz.getName());
-        }
-
-        FVisibleLevel level = MAP_LEVEL.get(clazz);
-        if (level == null) {
-            level = createLevel(clazz);
-            if (level == null) {
-                throw new RuntimeException("create level failed " + clazz.getName());
-            }
-
-            MAP_LEVEL.put(clazz, level);
-
-            if (sIsDebug) {
-                Log.i(FVisibleLevel.class.getSimpleName(), clazz.getName() + " create +++++");
-            }
-
-            level.onCreate();
-        }
-        return level;
-    }
-
-    /**
-     * 清空所有等级
-     */
-    public static synchronized void clearLevel() {
-        if (sIsDebug) {
-            Log.i(FVisibleLevel.class.getSimpleName(), "clearLevel");
-        }
-
-        MAP_LEVEL.clear();
-    }
-
-    /**
-     * 创建回调
-     */
-    protected abstract void onCreate();
-
-    /**
-     * 创建Item回调
-     */
-    protected abstract void onCreateItem(FVisibleLevelItem item);
-
-    /**
-     * 初始化Item
-     */
-    public void initItems(String[] items) {
-        if (items == null || items.length <= 0) {
-            throw new RuntimeException("items is null or empty " + getClass().getName());
-        }
-
-        mMapLevelItem.clear();
-        for (String item : items) {
-            if (TextUtils.isEmpty(item)) {
-                throw new RuntimeException("item is empty");
-            }
-
-            mMapLevelItem.put(item, EMPTY_ITEM);
-        }
-
-        if (sIsDebug) {
-            final StringBuilder builder = new StringBuilder();
-            builder.append(getClass().getName()).append(" initItems").append("\r\n");
-            for (String item : items) {
-                builder.append(item).append("\r\n");
-            }
-            Log.i(FVisibleLevel.class.getSimpleName(), builder.toString());
-        }
-    }
-
-    /**
-     * 返回某个Item
-     */
-    public final FVisibleLevelItem getItem(String name) {
-        return getOrCreateItem(name);
-    }
-
-    private FVisibleLevelItem getOrCreateItem(String name) {
-        if (TextUtils.isEmpty(name)) {
-            throw new RuntimeException("name is empty");
-        }
-
-        FVisibleLevelItem item = mMapLevelItem.get(name);
-        if (item == null) {
-            throw new RuntimeException("Item " + name + " was not found in level " + FVisibleLevel.this);
-        }
-
-        if (item == EMPTY_ITEM) {
-            item = new FVisibleLevelItem(name, FVisibleLevel.this);
-            mMapLevelItem.put(name, item);
-
-            if (sIsDebug) {
-                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create item:" + name);
-            }
-
-            onCreateItem(item);
-        }
-        return item;
-    }
+    var currentItem: FVisibleLevelItem = EmptyItem
+        private set
 
     /**
      * 添加回调，弱引用保存回调对象
      */
-    public final void addVisibilityCallback(VisibilityCallback callback) {
+    fun addVisibilityCallback(callback: VisibilityCallback?) {
         if (callback != null) {
-            mVisibilityCallbackHolder.put(callback, "");
+            _visibilityCallbackHolder[callback] = ""
         }
     }
 
     /**
      * 移除回调
      */
-    public final void removeVisibilityCallback(VisibilityCallback callback) {
+    fun removeVisibilityCallback(callback: VisibilityCallback?) {
         if (callback != null) {
-            mVisibilityCallbackHolder.remove(callback);
+            _visibilityCallbackHolder.remove(callback)
         }
     }
 
-    private Collection<VisibilityCallback> getVisibilityCallbacks() {
-        return Collections.unmodifiableCollection(mVisibilityCallbackHolder.keySet());
+    /**
+     * 创建回调
+     */
+    protected abstract fun onCreate()
+
+    /**
+     * 创建Item回调
+     */
+    protected abstract fun onCreateItem(item: FVisibleLevelItem)
+
+    /**
+     * 初始化Item
+     */
+    @Synchronized
+    fun initItems(items: Array<String>?) {
+        _isActive = false
+        isVisible = false
+        _itemHolder.clear()
+
+        val oldItem = currentItem
+        if (oldItem != EmptyItem) {
+            currentItem = EmptyItem
+            notifyItemVisibility(false, oldItem)
+        }
+
+        if (items.isNullOrEmpty()) {
+            return
+        }
+
+        for (item in items) {
+            require(item.isNotEmpty()) { "item is empty" }
+            _itemHolder[item] = EmptyItem
+        }
+        _isActive = true
+
+        if (sIsDebug) {
+            val logString = items.joinToString(
+                prefix = "${this@FVisibleLevel} initItems \r\n",
+                separator = "\r\n",
+                postfix = "\r\n",
+            )
+            Log.i(FVisibleLevel::class.java.simpleName, logString)
+        }
     }
 
     /**
-     * 等级是否可见
+     * 返回某个Item
      */
-    public final boolean isVisible() {
-        return mIsVisible;
+    fun getItem(name: String): FVisibleLevelItem {
+        return getOrCreateItem(name)
     }
 
-    /**
-     * 返回可见的Item
-     */
-    public final FVisibleLevelItem getVisibleItem() {
-        return mVisibleItem;
-    }
+    @Synchronized
+    private fun getOrCreateItem(name: String): FVisibleLevelItem {
+        require(name.isNotEmpty()) { "name is empty" }
+        if (!_isActive) return EmptyItem
 
-    /**
-     * 设置等级是否可见
-     */
-    public final void setVisible(boolean visible) {
-        if (mIsVisible != visible) {
-            mIsVisible = visible;
+        val cache = _itemHolder[name]
+        requireNotNull(cache) { "Item for $name was not found in level $this" }
+        if (cache !== EmptyItem) return cache
+
+        return FVisibleLevelItem(name, this).also { item ->
             if (sIsDebug) {
-                Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " setVisible:" + visible);
+                Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} create item $name")
             }
-
-            for (VisibilityCallback callback : getVisibilityCallbacks()) {
-                callback.onLevelVisibilityChanged(visible, FVisibleLevel.this);
-            }
-            notifyItemVisibility(visible, mVisibleItem);
+            _itemHolder[name] = item
+            onCreateItem(item)
         }
     }
 
     /**
-     * 设置Item可见
+     * 是否可见
      */
-    public final void visibleItem(String name) {
-        if (sIsDebug) {
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name + " levelVisible:" + mIsVisible);
+    var isVisible: Boolean = false
+        set(value) {
+            synchronized(this@FVisibleLevel) {
+                if (!_isActive && value) return
+                if (field != value) {
+                    field = value
+                    if (sIsDebug) {
+                        Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setVisible $value")
+                    }
+                    notifyLevelVisibility(value)
+                }
+            }
         }
 
-        final FVisibleLevelItem item = getOrCreateItem(name);
-        final FVisibleLevelItem old = mVisibleItem;
-        if (old != item) {
-            mVisibleItem = item;
-
-            if (old != null) {
-                notifyItemVisibility(false, old);
+    /**
+     * 通知当前level的可见状态
+     */
+    private fun notifyLevelVisibility(visible: Boolean) {
+        val callbacks = Collections.unmodifiableCollection(_visibilityCallbackHolder.keys)
+        val currentItem = currentItem
+        callbackHandler.post {
+            for (callback in callbacks) {
+                callback.onLevelVisibilityChanged(visible, this@FVisibleLevel)
             }
-
-            if (mIsVisible) {
-                notifyItemVisibility(true, item);
-            }
+            notifyItemVisibility(visible, currentItem)
         }
     }
 
     /**
-     * 通知可见的Item
+     * 设置当前Item
      */
-    public final void notifyVisibleItem() {
-        if (mIsVisible) {
-            notifyItemVisibility(true, mVisibleItem);
-        }
-    }
-
-    private void notifyItemVisibility(boolean visible, FVisibleLevelItem item) {
-        if (item == null) {
-            return;
-        }
+    @Synchronized
+    fun setCurrentItem(name: String) {
+        if (!_isActive) return
+        val item = getOrCreateItem(name)
+        val old = currentItem
+        if (old == item) return
 
         if (sIsDebug) {
-            Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyItemVisibility visible:" + visible + " item:" + item.getName());
+            Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} visibleItem $name isVisible $isVisible isActive:$_isActive")
         }
 
-        if (mMapLevelItem.containsKey(item.getName())) {
-            item.notifyVisibility(visible);
-        } else {
-            throw new RuntimeException("Item " + item.getName() + " was not found in level " + FVisibleLevel.this);
+        currentItem = item
+        notifyItemVisibility(false, old)
+        if (isVisible) {
+            notifyItemVisibility(true, item)
         }
     }
 
-    private static FVisibleLevel createLevel(Class<? extends FVisibleLevel> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+    /**
+     * 通知Item的可见状态
+     */
+    private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
+        callbackHandler.post {
+            if (_itemHolder.containsKey(item.name)) {
+                item.notifyVisibility(visible)
+            }
         }
-        return null;
     }
 
-    public interface VisibilityCallback {
+    fun interface VisibilityCallback {
         /**
          * 等级可见状态变化回调
          */
-        void onLevelVisibilityChanged(boolean visible, FVisibleLevel level);
+        fun onLevelVisibilityChanged(visible: Boolean, level: FVisibleLevel)
+    }
+
+    companion object {
+        private val levelHolder = ConcurrentHashMap<Class<out FVisibleLevel>, FVisibleLevel>()
+        private val callbackHandler = Handler(Looper.getMainLooper())
+
+        @JvmStatic
+        private var sIsDebug = false
+
+        @JvmStatic
+        fun setDebug(isDebug: Boolean) {
+            sIsDebug = isDebug
+        }
+
+        /**
+         * 返回某个等级
+         */
+        @JvmStatic
+        fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
+            val cache = levelHolder[clazz]
+            if (cache != null) return cache
+
+            // 创建并保存level
+            val level = clazz.newInstance().also {
+                levelHolder[clazz] = it
+            }
+
+            val savedLevel = levelHolder[clazz]
+            if (savedLevel == null) {
+                /**
+                 * 如果为null，说明其他线程触发了[clear]方法，重新调用get方法获取
+                 */
+                return get(clazz)
+            }
+
+            if (savedLevel === level) {
+                if (sIsDebug) {
+                    Log.i(FVisibleLevel::class.java.simpleName, "create level +++++ $level")
+                }
+                savedLevel.onCreate()
+            }
+            return savedLevel
+        }
+
+        /**
+         * 清空所有等级
+         */
+        @JvmStatic
+        fun clear() {
+            if (sIsDebug) {
+                Log.i(FVisibleLevel::class.java.simpleName, "clearLevel")
+            }
+            levelHolder.clear()
+        }
+
+        /**
+         * 空的Item
+         */
+        @JvmStatic
+        val EmptyItem = FVisibleLevelItem("", object : FVisibleLevel() {
+            override fun onCreate() {
+            }
+
+            override fun onCreateItem(item: FVisibleLevelItem) {
+            }
+        })
     }
 }

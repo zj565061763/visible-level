@@ -19,7 +19,7 @@ class FVisibleLevelItem internal constructor(
      * Item是否可见
      */
     val isVisible: Boolean
-        get() = _level.isVisible && _level.visibleItem == this
+        get() = _level.isVisible && _level.currentItem == this
 
     /**
      * 设置Item的子等级
@@ -54,8 +54,8 @@ class FVisibleLevelItem internal constructor(
      */
     internal fun notifyVisibility(visible: Boolean) {
         val callbacks = Collections.unmodifiableCollection(_visibilityCallbackHolder.keys)
-        for (item in callbacks) {
-            item.onLevelItemVisibilityChanged(visible, this)
+        for (callback in callbacks) {
+            callback.onLevelItemVisibilityChanged(visible, this)
         }
         _childLevel?.isVisible = visible
     }
