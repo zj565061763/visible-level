@@ -10,7 +10,7 @@ import com.sd.demo.visible_level.appview.HomeView;
 import com.sd.demo.visible_level.appview.LiveView;
 import com.sd.demo.visible_level.appview.MeView;
 import com.sd.demo.visible_level.databinding.ActivityMainBinding;
-import com.sd.demo.visible_level.level_home.LevelHome;
+import com.sd.demo.visible_level.level.LevelHome;
 import com.sd.lib.vlevel.FVisibleLevel;
 
 public class MainActivity extends AppCompatActivity
@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity
         mMeView = new MeView(this);
 
         mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
-        mVisibleLevel.getItem(LevelHome.ITEM_HOME).addVisibilityCallback(mHomeView);
-        mVisibleLevel.getItem(LevelHome.ITEM_LIVE).addVisibilityCallback(mLiveView);
-        mVisibleLevel.getItem(LevelHome.ITEM_ME).addVisibilityCallback(mMeView);
+        mVisibleLevel.getItem(LevelHome.ItemHome).addVisibilityCallback(mHomeView);
+        mVisibleLevel.getItem(LevelHome.ItemLive).addVisibilityCallback(mLiveView);
+        mVisibleLevel.getItem(LevelHome.ItemMe).addVisibilityCallback(mMeView);
 
         mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -55,15 +55,15 @@ public class MainActivity extends AppCompatActivity
                 switch (checkedId)
                 {
                     case R.id.btn_home:
-                        mVisibleLevel.visibleItem(LevelHome.ITEM_HOME);
+                        mVisibleLevel.setCurrentItem(LevelHome.ItemHome);
                         mBinding.flContainer.addView(mHomeView);
                         break;
                     case R.id.btn_live:
-                        mVisibleLevel.visibleItem(LevelHome.ITEM_LIVE);
+                        mVisibleLevel.setCurrentItem(LevelHome.ItemLive);
                         mBinding.flContainer.addView(mLiveView);
                         break;
                     case R.id.btn_me:
-                        mVisibleLevel.visibleItem(LevelHome.ITEM_ME);
+                        mVisibleLevel.setCurrentItem(LevelHome.ItemMe);
                         mBinding.flContainer.addView(mMeView);
                         break;
                     default:
