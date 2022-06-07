@@ -1,13 +1,5 @@
-package com.sd.demo.visible_level.appview;
+package com.sd.demo.visible_level.appview
 
-import android.content.Context;
+import android.content.Context
 
-import androidx.annotation.NonNull;
-
-public class LiveView extends BaseAppView
-{
-    public LiveView(@NonNull Context context)
-    {
-        super(context);
-    }
-}
+class LiveView(context: Context) : BaseAppView(context)
