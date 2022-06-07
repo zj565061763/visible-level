@@ -29,11 +29,11 @@ class MainActivity : AppCompatActivity() {
         _meView = MeView(this)
 
         _visibleLevel.apply {
-            isVisible = true
             addVisibilityCallback(_visibilityCallback)
             getItem(LevelHome.ItemHome).addVisibilityCallback(_homeView)
             getItem(LevelHome.ItemLive).addVisibilityCallback(_liveView)
             getItem(LevelHome.ItemMe).addVisibilityCallback(_meView)
+            isVisible = true
         }
 
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
