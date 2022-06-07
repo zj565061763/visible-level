@@ -152,7 +152,10 @@ abstract class FVisibleLevel protected constructor() {
         }
 
         currentItem = item
-        notifyItemVisibility(false, old)
+
+        if (old != EmptyItem) {
+            notifyItemVisibility(false, old)
+        }
         if (isVisible) {
             notifyItemVisibility(true, item)
         }
