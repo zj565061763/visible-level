@@ -60,14 +60,19 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "Level VisibilityChanged level:$level -> $visible")
     }
 
+    override fun onStart() {
+        super.onStart()
+        _visibleLevel.isVisible = true
+    }
+
     override fun onStop() {
         super.onStop()
         _visibleLevel.isVisible = false
     }
 
-    override fun onStart() {
-        super.onStart()
-        _visibleLevel.isVisible = true
+    override fun onDestroy() {
+        super.onDestroy()
+        FVisibleLevel.remove(LevelHome::class.java)
     }
 
     companion object {

@@ -227,7 +227,7 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun clear() {
             if (sIsDebug) {
-                Log.i(FVisibleLevel::class.java.simpleName, "clearLevel")
+                Log.i(FVisibleLevel::class.java.simpleName, "clear")
             }
             levelHolder.clear()
         }
@@ -238,8 +238,14 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
             levelHolder[clazz]?.let {
+                if (sIsDebug) {
+                    Log.i(FVisibleLevel::class.java.simpleName, "remove start $clazz")
+                }
                 it.initItems(null)
                 levelHolder.remove(clazz)
+                if (sIsDebug) {
+                    Log.i(FVisibleLevel::class.java.simpleName, "remove finish $clazz")
+                }
             }
         }
 
