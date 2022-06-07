@@ -24,10 +24,13 @@ class FVisibleLevelItem internal constructor(
     /**
      * 设置Item的子等级
      */
-    fun setChildLevel(level: FVisibleLevel) {
+    fun setChildLevel(level: FVisibleLevel?) {
         require(_level !== level) { "child level should not be current level" }
-        if (_childLevel != level) {
+        val old = _childLevel
+        if (old != level) {
             _childLevel = level
+            old?.isVisible = false
+            level?.isVisible = isVisible
         }
     }
 
