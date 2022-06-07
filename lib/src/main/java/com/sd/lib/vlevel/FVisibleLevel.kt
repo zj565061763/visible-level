@@ -124,11 +124,11 @@ abstract class FVisibleLevel protected constructor() {
     private fun notifyLevelVisibility(visible: Boolean) {
         val callbacks = Collections.unmodifiableCollection(_visibilityCallbackHolder.keys)
         val currentItem = currentItem
+        notifyItemVisibility(visible, currentItem)
         callbackHandler.post {
             for (callback in callbacks) {
-                callback.onLevelVisibilityChanged(visible, this@FVisibleLevel)
+                callback.onLevelVisibilityChanged(this@FVisibleLevel)
             }
-            notifyItemVisibility(visible, currentItem)
         }
     }
 
@@ -171,7 +171,7 @@ abstract class FVisibleLevel protected constructor() {
         /**
          * 等级可见状态变化回调
          */
-        fun onLevelVisibilityChanged(visible: Boolean, level: FVisibleLevel)
+        fun onLevelVisibilityChanged(level: FVisibleLevel)
     }
 
     companion object {

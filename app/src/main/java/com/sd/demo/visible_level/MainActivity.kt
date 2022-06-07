@@ -56,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         _binding.radioMenu.check(R.id.btn_home)
     }
 
-    private val _visibilityCallback = FVisibleLevel.VisibilityCallback { visible, level ->
-        Log.i(TAG, "Level VisibilityChanged level:$level -> $visible")
+    private val _visibilityCallback = FVisibleLevel.VisibilityCallback { level ->
+        Log.i(TAG, "Level VisibilityChanged level:$level -> ${level.isVisible}")
     }
 
     override fun onStart() {
