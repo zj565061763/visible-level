@@ -30,9 +30,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 返回某个等级
-     *
-     * @param clazz
-     * @return
      */
     public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz) {
         if (clazz == null) {
@@ -79,15 +76,11 @@ public abstract class FVisibleLevel {
 
     /**
      * 创建Item回调
-     *
-     * @param item
      */
     protected abstract void onCreateItem(FVisibleLevelItem item);
 
     /**
      * 初始化Item
-     *
-     * @param items
      */
     public void initItems(String[] items) {
         if (items == null || items.length <= 0) {
@@ -115,9 +108,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 返回某个Item
-     *
-     * @param name
-     * @return
      */
     public final FVisibleLevelItem getItem(String name) {
         return getOrCreateItem(name);
@@ -148,8 +138,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 添加回调，弱引用保存回调对象
-     *
-     * @param callback
      */
     public final void addVisibilityCallback(VisibilityCallback callback) {
         if (callback != null) {
@@ -159,8 +147,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 移除回调
-     *
-     * @param callback
      */
     public final void removeVisibilityCallback(VisibilityCallback callback) {
         if (callback != null) {
@@ -174,8 +160,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 等级是否可见
-     *
-     * @return
      */
     public final boolean isVisible() {
         return mIsVisible;
@@ -183,8 +167,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 返回可见的Item
-     *
-     * @return
      */
     public final FVisibleLevelItem getVisibleItem() {
         return mVisibleItem;
@@ -192,8 +174,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 设置等级是否可见
-     *
-     * @param visible
      */
     public final void setVisible(boolean visible) {
         if (mIsVisible != visible) {
@@ -211,8 +191,6 @@ public abstract class FVisibleLevel {
 
     /**
      * 设置Item可见
-     *
-     * @param name
      */
     public final void visibleItem(String name) {
         if (sIsDebug) {
@@ -273,9 +251,6 @@ public abstract class FVisibleLevel {
     public interface VisibilityCallback {
         /**
          * 等级可见状态变化回调
-         *
-         * @param visible
-         * @param level
          */
         void onLevelVisibilityChanged(boolean visible, FVisibleLevel level);
     }
