@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
             getItem(LevelHome.ItemHome).addVisibilityCallback(_homeView)
             getItem(LevelHome.ItemLive).addVisibilityCallback(_liveView)
             getItem(LevelHome.ItemMe).addVisibilityCallback(_meView)
-            isVisible = true
         }
 
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
@@ -59,6 +58,16 @@ class MainActivity : AppCompatActivity() {
 
     private val _visibilityCallback = FVisibleLevel.VisibilityCallback { visible, level ->
         Log.i(TAG, "Level VisibilityChanged level:$level -> $visible")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        _visibleLevel.isVisible = false
+    }
+
+    override fun onStart() {
+        super.onStart()
+        _visibleLevel.isVisible = true
     }
 
     companion object {
