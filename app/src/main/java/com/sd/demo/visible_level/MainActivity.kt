@@ -1,86 +1,66 @@
-package com.sd.demo.visible_level;
+package com.sd.demo.visible_level
 
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.RadioGroup;
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.sd.demo.visible_level.appview.HomeView
+import com.sd.demo.visible_level.appview.LiveView
+import com.sd.demo.visible_level.appview.MeView
+import com.sd.demo.visible_level.databinding.ActivityMainBinding
+import com.sd.demo.visible_level.level.LevelHome
+import com.sd.lib.vlevel.FVisibleLevel
 
-import androidx.appcompat.app.AppCompatActivity;
+class MainActivity : AppCompatActivity() {
+    private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-import com.sd.demo.visible_level.appview.HomeView;
-import com.sd.demo.visible_level.appview.LiveView;
-import com.sd.demo.visible_level.appview.MeView;
-import com.sd.demo.visible_level.databinding.ActivityMainBinding;
-import com.sd.demo.visible_level.level.LevelHome;
-import com.sd.lib.vlevel.FVisibleLevel;
+    private lateinit var _homeView: HomeView
+    private lateinit var _liveView: LiveView
+    private lateinit var _meView: MeView
 
-public class MainActivity extends AppCompatActivity
-{
-    static
-    {
-        FVisibleLevel.setDebug(true);
-    }
+    private val _visibleLevel = FVisibleLevel.get(LevelHome::class.java)
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        FVisibleLevel.setDebug(true)
 
-    private ActivityMainBinding mBinding;
+        setContentView(_binding.root)
+        _homeView = HomeView(this)
+        _liveView = LiveView(this)
+        _meView = MeView(this)
 
-    private HomeView mHomeView;
-    private LiveView mLiveView;
-    private MeView mMeView;
-
-    private final FVisibleLevel mVisibleLevel = FVisibleLevel.get(LevelHome.class);
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        mBinding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-
-        mHomeView = new HomeView(this);
-        mLiveView = new LiveView(this);
-        mMeView = new MeView(this);
-
-        mVisibleLevel.addVisibilityCallback(mVisibilityCallback);
-        mVisibleLevel.getItem(LevelHome.ItemHome).addVisibilityCallback(mHomeView);
-        mVisibleLevel.getItem(LevelHome.ItemLive).addVisibilityCallback(mLiveView);
-        mVisibleLevel.getItem(LevelHome.ItemMe).addVisibilityCallback(mMeView);
-
-        mBinding.radioMenu.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId)
-            {
-                mBinding.flContainer.removeAllViews();
-                switch (checkedId)
-                {
-                    case R.id.btn_home:
-                        mVisibleLevel.setCurrentItem(LevelHome.ItemHome);
-                        mBinding.flContainer.addView(mHomeView);
-                        break;
-                    case R.id.btn_live:
-                        mVisibleLevel.setCurrentItem(LevelHome.ItemLive);
-                        mBinding.flContainer.addView(mLiveView);
-                        break;
-                    case R.id.btn_me:
-                        mVisibleLevel.setCurrentItem(LevelHome.ItemMe);
-                        mBinding.flContainer.addView(mMeView);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        mBinding.radioMenu.check(R.id.btn_home);
-    }
-
-    private final FVisibleLevel.VisibilityCallback mVisibilityCallback = new FVisibleLevel.VisibilityCallback()
-    {
-        @Override
-        public void onLevelVisibilityChanged(boolean visible, FVisibleLevel level)
-        {
-            Log.i(TAG, "onLevelVisibilityChanged visible:" + visible + " level:" + level);
+        _visibleLevel.apply {
+            addVisibilityCallback(_visibilityCallback)
+            getItem(LevelHome.ItemHome).addVisibilityCallback(_homeView)
+            getItem(LevelHome.ItemLive).addVisibilityCallback(_liveView)
+            getItem(LevelHome.ItemMe).addVisibilityCallback(_meView)
         }
-    };
+
+        _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
+            _binding.flContainer.removeAllViews()
+            when (checkedId) {
+                R.id.btn_home -> {
+                    _visibleLevel.setCurrentItem(LevelHome.ItemHome)
+                    _binding.flContainer.addView(_homeView)
+                }
+                R.id.btn_live -> {
+                    _visibleLevel.setCurrentItem(LevelHome.ItemLive)
+                    _binding.flContainer.addView(_liveView)
+                }
+                R.id.btn_me -> {
+                    _visibleLevel.setCurrentItem(LevelHome.ItemMe)
+                    _binding.flContainer.addView(_meView)
+                }
+                else -> {}
+            }
+        }
+        _binding.radioMenu.check(R.id.btn_home)
+    }
+
+    private val _visibilityCallback = FVisibleLevel.VisibilityCallback { visible, level ->
+        Log.i(TAG, "onLevelVisibilityChanged level:$level visible:$visible")
+    }
+
+    companion object {
+        const val TAG = "MainActivity"
+    }
 }
