@@ -9,8 +9,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class FVisibleLevel
-{
+public abstract class FVisibleLevel {
     private static final Map<Class<? extends FVisibleLevel>, FVisibleLevel> MAP_LEVEL = new ConcurrentHashMap<>();
 
     private static final FVisibleLevelItem EMPTY_ITEM = new FVisibleLevelItem(null, null);
@@ -22,12 +21,10 @@ public abstract class FVisibleLevel
 
     private static boolean sIsDebug;
 
-    protected FVisibleLevel()
-    {
+    protected FVisibleLevel() {
     }
 
-    public static void setDebug(boolean isDebug)
-    {
+    public static void setDebug(boolean isDebug) {
         sIsDebug = isDebug;
     }
 
@@ -37,8 +34,7 @@ public abstract class FVisibleLevel
      * @param clazz
      * @return
      */
-    public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz)
-    {
+    public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz) {
         if (clazz == null)
             throw new NullPointerException("clazz is null");
 
@@ -46,8 +42,7 @@ public abstract class FVisibleLevel
             throw new IllegalArgumentException("clazz is " + clazz.getName());
 
         FVisibleLevel level = MAP_LEVEL.get(clazz);
-        if (level == null)
-        {
+        if (level == null) {
             level = createLevel(clazz);
             if (level == null)
                 throw new RuntimeException("create level failed " + clazz.getName());
@@ -65,8 +60,7 @@ public abstract class FVisibleLevel
     /**
      * 清空所有等级
      */
-    public static synchronized void clearLevel()
-    {
+    public static synchronized void clearLevel() {
         if (sIsDebug)
             Log.i(FVisibleLevel.class.getSimpleName(), "clearLevel");
 
@@ -90,26 +84,22 @@ public abstract class FVisibleLevel
      *
      * @param items
      */
-    public void initItems(String[] items)
-    {
+    public void initItems(String[] items) {
         if (items == null || items.length <= 0)
             throw new RuntimeException("items is null or empty " + getClass().getName());
 
         mMapLevelItem.clear();
-        for (String item : items)
-        {
+        for (String item : items) {
             if (TextUtils.isEmpty(item))
                 throw new RuntimeException("item is empty");
 
             mMapLevelItem.put(item, EMPTY_ITEM);
         }
 
-        if (sIsDebug)
-        {
+        if (sIsDebug) {
             final StringBuilder builder = new StringBuilder();
             builder.append(getClass().getName()).append(" initItems").append("\r\n");
-            for (String item : items)
-            {
+            for (String item : items) {
                 builder.append(item).append("\r\n");
             }
             Log.i(FVisibleLevel.class.getSimpleName(), builder.toString());
@@ -122,13 +112,11 @@ public abstract class FVisibleLevel
      * @param name
      * @return
      */
-    public final FVisibleLevelItem getItem(String name)
-    {
+    public final FVisibleLevelItem getItem(String name) {
         return getOrCreateItem(name);
     }
 
-    private FVisibleLevelItem getOrCreateItem(String name)
-    {
+    private FVisibleLevelItem getOrCreateItem(String name) {
         if (TextUtils.isEmpty(name))
             throw new RuntimeException("name is empty");
 
@@ -136,8 +124,7 @@ public abstract class FVisibleLevel
         if (item == null)
             throw new RuntimeException("Item " + name + " was not found in level " + FVisibleLevel.this);
 
-        if (item == EMPTY_ITEM)
-        {
+        if (item == EMPTY_ITEM) {
             item = new FVisibleLevelItem(name, FVisibleLevel.this);
             mMapLevelItem.put(name, item);
 
@@ -154,8 +141,7 @@ public abstract class FVisibleLevel
      *
      * @param callback
      */
-    public final void addVisibilityCallback(VisibilityCallback callback)
-    {
+    public final void addVisibilityCallback(VisibilityCallback callback) {
         if (callback != null)
             mVisibilityCallbackHolder.put(callback, "");
     }
@@ -165,14 +151,12 @@ public abstract class FVisibleLevel
      *
      * @param callback
      */
-    public final void removeVisibilityCallback(VisibilityCallback callback)
-    {
+    public final void removeVisibilityCallback(VisibilityCallback callback) {
         if (callback != null)
             mVisibilityCallbackHolder.remove(callback);
     }
 
-    private Collection<VisibilityCallback> getVisibilityCallbacks()
-    {
+    private Collection<VisibilityCallback> getVisibilityCallbacks() {
         return Collections.unmodifiableCollection(mVisibilityCallbackHolder.keySet());
     }
 
@@ -181,8 +165,7 @@ public abstract class FVisibleLevel
      *
      * @return
      */
-    public final boolean isVisible()
-    {
+    public final boolean isVisible() {
         return mIsVisible;
     }
 
@@ -191,8 +174,7 @@ public abstract class FVisibleLevel
      *
      * @return
      */
-    public final FVisibleLevelItem getVisibleItem()
-    {
+    public final FVisibleLevelItem getVisibleItem() {
         return mVisibleItem;
     }
 
@@ -201,16 +183,13 @@ public abstract class FVisibleLevel
      *
      * @param visible
      */
-    public final void setVisible(boolean visible)
-    {
-        if (mIsVisible != visible)
-        {
+    public final void setVisible(boolean visible) {
+        if (mIsVisible != visible) {
             mIsVisible = visible;
             if (sIsDebug)
                 Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " setVisible:" + visible);
 
-            for (VisibilityCallback callback : getVisibilityCallbacks())
-            {
+            for (VisibilityCallback callback : getVisibilityCallbacks()) {
                 callback.onLevelVisibilityChanged(visible, FVisibleLevel.this);
             }
             notifyItemVisibility(visible, mVisibleItem);
@@ -222,15 +201,13 @@ public abstract class FVisibleLevel
      *
      * @param name
      */
-    public final void visibleItem(String name)
-    {
+    public final void visibleItem(String name) {
         if (sIsDebug)
             Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name + " levelVisible:" + mIsVisible);
 
         final FVisibleLevelItem item = getOrCreateItem(name);
         final FVisibleLevelItem old = mVisibleItem;
-        if (old != item)
-        {
+        if (old != item) {
             mVisibleItem = item;
 
             if (old != null)
@@ -244,46 +221,37 @@ public abstract class FVisibleLevel
     /**
      * 通知可见的Item
      */
-    public final void notifyVisibleItem()
-    {
+    public final void notifyVisibleItem() {
         if (mIsVisible)
             notifyItemVisibility(true, mVisibleItem);
     }
 
-    private void notifyItemVisibility(boolean visible, FVisibleLevelItem item)
-    {
+    private void notifyItemVisibility(boolean visible, FVisibleLevelItem item) {
         if (item == null)
             return;
 
         if (sIsDebug)
             Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyItemVisibility visible:" + visible + " item:" + item.getName());
 
-        if (mMapLevelItem.containsKey(item.getName()))
-        {
+        if (mMapLevelItem.containsKey(item.getName())) {
             item.notifyVisibility(visible);
-        } else
-        {
+        } else {
             throw new RuntimeException("Item " + item.getName() + " was not found in level " + FVisibleLevel.this);
         }
     }
 
-    private static FVisibleLevel createLevel(Class<? extends FVisibleLevel> clazz)
-    {
-        try
-        {
+    private static FVisibleLevel createLevel(Class<? extends FVisibleLevel> clazz) {
+        try {
             return clazz.newInstance();
-        } catch (IllegalAccessException e)
-        {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
-        } catch (InstantiationException e)
-        {
+        } catch (InstantiationException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public interface VisibilityCallback
-    {
+    public interface VisibilityCallback {
         /**
          * 等级可见状态变化回调
          *

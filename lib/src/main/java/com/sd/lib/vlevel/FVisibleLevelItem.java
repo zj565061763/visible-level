@@ -5,16 +5,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public final class FVisibleLevelItem
-{
+public final class FVisibleLevelItem {
     private final String mName;
     private final FVisibleLevel mLevel;
 
     private FVisibleLevel mChildLevel;
     private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
 
-    FVisibleLevelItem(String name, FVisibleLevel level)
-    {
+    FVisibleLevelItem(String name, FVisibleLevel level) {
         mName = name;
         mLevel = level;
     }
@@ -24,8 +22,7 @@ public final class FVisibleLevelItem
      *
      * @param callback
      */
-    public void addVisibilityCallback(VisibilityCallback callback)
-    {
+    public void addVisibilityCallback(VisibilityCallback callback) {
         if (callback != null)
             mVisibilityCallbackHolder.put(callback, "");
     }
@@ -35,14 +32,12 @@ public final class FVisibleLevelItem
      *
      * @param callback
      */
-    public void removeVisibilityCallback(VisibilityCallback callback)
-    {
+    public void removeVisibilityCallback(VisibilityCallback callback) {
         if (callback != null)
             mVisibilityCallbackHolder.remove(callback);
     }
 
-    private Collection<VisibilityCallback> getVisibilityCallbacks()
-    {
+    private Collection<VisibilityCallback> getVisibilityCallbacks() {
         return Collections.unmodifiableCollection(mVisibilityCallbackHolder.keySet());
     }
 
@@ -51,8 +46,7 @@ public final class FVisibleLevelItem
      *
      * @return
      */
-    public String getName()
-    {
+    public String getName() {
         return mName;
     }
 
@@ -61,8 +55,7 @@ public final class FVisibleLevelItem
      *
      * @return
      */
-    public FVisibleLevel getLevel()
-    {
+    public FVisibleLevel getLevel() {
         return mLevel;
     }
 
@@ -71,8 +64,7 @@ public final class FVisibleLevelItem
      *
      * @return
      */
-    public boolean isVisible()
-    {
+    public boolean isVisible() {
         return getLevel().isVisible() && getLevel().getVisibleItem() == this;
     }
 
@@ -81,18 +73,15 @@ public final class FVisibleLevelItem
      *
      * @param level
      */
-    public void setChildLevel(FVisibleLevel level)
-    {
+    public void setChildLevel(FVisibleLevel level) {
         if (level == mLevel)
             throw new IllegalArgumentException("child level should not be current level");
 
         mChildLevel = level;
     }
 
-    void notifyVisibility(boolean visible)
-    {
-        for (VisibilityCallback callback : getVisibilityCallbacks())
-        {
+    void notifyVisibility(boolean visible) {
+        for (VisibilityCallback callback : getVisibilityCallbacks()) {
             callback.onLevelItemVisibilityChanged(visible, FVisibleLevelItem.this);
         }
 
@@ -100,8 +89,7 @@ public final class FVisibleLevelItem
             mChildLevel.setVisible(visible);
     }
 
-    public interface VisibilityCallback
-    {
+    public interface VisibilityCallback {
         /**
          * item可见状态变化回调
          *
