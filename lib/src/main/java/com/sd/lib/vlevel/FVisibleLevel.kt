@@ -233,6 +233,17 @@ abstract class FVisibleLevel protected constructor() {
         }
 
         /**
+         * 移除等级
+         */
+        @JvmStatic
+        fun remove(clazz: Class<out FVisibleLevel>) {
+            levelHolder[clazz]?.let {
+                it.initItems(null)
+                levelHolder.remove(clazz)
+            }
+        }
+
+        /**
          * 空的Item
          */
         @JvmStatic
