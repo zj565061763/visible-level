@@ -148,7 +148,7 @@ abstract class FVisibleLevel protected constructor() {
         if (old == item) return
 
         if (sIsDebug) {
-            Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setCurrentItem $name isVisible $isVisible isActive:$_isActive")
+            Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setCurrentItem ${old.name} -> $name isVisible $isVisible")
         }
 
         currentItem = item
