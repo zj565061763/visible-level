@@ -183,7 +183,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     companion object {
-        private val levelHolder = ConcurrentHashMap<Class<out FVisibleLevel>, FVisibleLevel>()
+        private val levelHolder = mutableMapOf<Class<out FVisibleLevel>, FVisibleLevel>()
         private val callbackHandler = Handler(Looper.getMainLooper())
 
         @JvmStatic
@@ -199,29 +199,20 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
-            val cache = levelHolder[clazz]
-            if (cache != null) return cache
+            val level = synchronized(levelHolder) {
+                val cache = levelHolder[clazz]
+                if (cache != null) return cache
 
-            // 创建并保存level
-            val level = clazz.newInstance().also {
-                levelHolder[clazz] = it
-            }
-
-            val savedLevel = levelHolder[clazz]
-            if (savedLevel == null) {
-                /**
-                 * 如果为null，说明其他线程触发了[clear]方法，重新调用get方法获取
-                 */
-                return get(clazz)
-            }
-
-            if (savedLevel === level) {
-                if (sIsDebug) {
-                    Log.i(FVisibleLevel::class.java.simpleName, "create level +++++ $level")
+                // 创建并保存level
+                clazz.newInstance().also {
+                    levelHolder[clazz] = it
+                    if (sIsDebug) {
+                        Log.i(FVisibleLevel::class.java.simpleName, "create level +++++ $it")
+                    }
                 }
-                savedLevel.onCreate()
             }
-            return savedLevel
+            level.onCreate()
+            return level
         }
 
         /**
@@ -229,10 +220,12 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun clear() {
-            if (sIsDebug) {
-                Log.i(FVisibleLevel::class.java.simpleName, "clear")
+            synchronized(levelHolder) {
+                if (sIsDebug) {
+                    Log.i(FVisibleLevel::class.java.simpleName, "clear")
+                }
+                levelHolder.clear()
             }
-            levelHolder.clear()
         }
 
         /**
@@ -240,15 +233,15 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
-            levelHolder[clazz]?.let {
-                if (sIsDebug) {
-                    Log.i(FVisibleLevel::class.java.simpleName, "remove start $clazz")
-                }
-                it.initItems(null)
+            val level = synchronized(levelHolder) {
                 levelHolder.remove(clazz)
+            }
+
+            if (level != null) {
                 if (sIsDebug) {
-                    Log.i(FVisibleLevel::class.java.simpleName, "remove finish $clazz")
+                    Log.i(FVisibleLevel::class.java.simpleName, "remove $clazz")
                 }
+                level.initItems(null)
             }
         }
 
