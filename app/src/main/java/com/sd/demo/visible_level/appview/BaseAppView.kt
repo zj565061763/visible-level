@@ -12,6 +12,6 @@ open class BaseAppView(
 
     override fun onLevelItemVisibilityChanged(visible: Boolean, item: FVisibleLevelItem) {
         Log.i(MainActivity.TAG,
-            "AppView onLevelItemVisibilityChanged ${item.name} -> $visible $this")
+            "AppView VisibilityChanged ${item.name} -> $visible $this")
     }
 }
