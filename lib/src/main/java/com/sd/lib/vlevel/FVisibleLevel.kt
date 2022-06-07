@@ -3,12 +3,10 @@ package com.sd.lib.vlevel
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class FVisibleLevel protected constructor() {
     private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
-    private val _visibilityCallbackHolder = WeakHashMap<VisibilityCallback, String>()
 
     private var _isActive = false
 
@@ -17,24 +15,6 @@ abstract class FVisibleLevel protected constructor() {
      */
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
-
-    /**
-     * 添加回调，弱引用保存回调对象
-     */
-    fun addVisibilityCallback(callback: VisibilityCallback?) {
-        if (callback != null) {
-            _visibilityCallbackHolder[callback] = ""
-        }
-    }
-
-    /**
-     * 移除回调
-     */
-    fun removeVisibilityCallback(callback: VisibilityCallback?) {
-        if (callback != null) {
-            _visibilityCallbackHolder.remove(callback)
-        }
-    }
 
     /**
      * 创建回调
@@ -113,24 +93,10 @@ abstract class FVisibleLevel protected constructor() {
                     if (sIsDebug) {
                         Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setVisible $value")
                     }
-                    notifyLevelVisibility(value)
+                    notifyItemVisibility(value, currentItem)
                 }
             }
         }
-
-    /**
-     * 通知当前level的可见状态
-     */
-    private fun notifyLevelVisibility(visible: Boolean) {
-        val callbacks = Collections.unmodifiableCollection(_visibilityCallbackHolder.keys)
-        val currentItem = currentItem
-        notifyItemVisibility(visible, currentItem)
-        callbackHandler.post {
-            for (callback in callbacks) {
-                callback.onLevelVisibilityChanged(this@FVisibleLevel)
-            }
-        }
-    }
 
     /**
      * 设置当前Item
@@ -165,13 +131,6 @@ abstract class FVisibleLevel protected constructor() {
                 item.notifyVisibility(visible)
             }
         }
-    }
-
-    fun interface VisibilityCallback {
-        /**
-         * 等级可见状态变化回调
-         */
-        fun onLevelVisibilityChanged(level: FVisibleLevel)
     }
 
     companion object {

@@ -1,7 +1,6 @@
 package com.sd.demo.visible_level
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.visible_level.appview.HomeView
 import com.sd.demo.visible_level.appview.LiveView
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         _meView = MeView(this)
 
         _visibleLevel.apply {
-            addVisibilityCallback(_visibilityCallback)
             getItem(LevelHome.ItemHome).addVisibilityCallback(_homeView)
             getItem(LevelHome.ItemLive).addVisibilityCallback(_liveView)
             getItem(LevelHome.ItemMe).addVisibilityCallback(_meView)
@@ -54,10 +52,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         _binding.radioMenu.check(R.id.btn_home)
-    }
-
-    private val _visibilityCallback = FVisibleLevel.VisibilityCallback { level ->
-        Log.i(TAG, "Level VisibilityChanged level:$level -> ${level.isVisible}")
     }
 
     override fun onStart() {
