@@ -16,6 +16,20 @@ class FVisibleLevelItem internal constructor(
     private val _visibilityCallbackHolder = WeakHashMap<VisibilityCallback, String>()
 
     /**
+     * Item是否可见
+     */
+    val isVisible: Boolean
+        get() = _level.isVisible && _level.visibleItem == this
+
+    /**
+     * 设置Item的子等级
+     */
+    fun setChildLevel(level: FVisibleLevel) {
+        require(level != this._level) { "child level should not be current level" }
+        _childLevel = level
+    }
+
+    /**
      * 添加回调，弱引用保存回调对象
      */
     fun addVisibilityCallback(callback: VisibilityCallback?) {
@@ -31,20 +45,6 @@ class FVisibleLevelItem internal constructor(
         if (callback != null) {
             _visibilityCallbackHolder.remove(callback)
         }
-    }
-
-    /**
-     * Item是否可见
-     */
-    val isVisible: Boolean
-        get() = _level.isVisible && _level.visibleItem == this
-
-    /**
-     * 设置Item的子等级
-     */
-    fun setChildLevel(level: FVisibleLevel) {
-        require(level != this._level) { "child level should not be current level" }
-        _childLevel = level
     }
 
     /**
