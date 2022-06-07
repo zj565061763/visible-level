@@ -1,101 +1,67 @@
-package com.sd.lib.vlevel;
+package com.sd.lib.vlevel
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*
 
-public final class FVisibleLevelItem {
-    private final String mName;
-    private final FVisibleLevel mLevel;
-
-    private FVisibleLevel mChildLevel;
-    private final Map<VisibilityCallback, String> mVisibilityCallbackHolder = new WeakHashMap<>();
-
-    FVisibleLevelItem(String name, FVisibleLevel level) {
-        mName = name;
-        mLevel = level;
-    }
+class FVisibleLevelItem internal constructor(
+    name: String,
+    level: FVisibleLevel,
+) {
+    /** Item名称 */
+    val name = name
+    /** Item所在的等级 */
+    private val _level = level
+    /** 子级 */
+    private var _childLevel: FVisibleLevel? = null
+    /** 回调 */
+    private val _visibilityCallbackHolder = WeakHashMap<VisibilityCallback, String>()
 
     /**
      * 添加回调，弱引用保存回调对象
-     *
-     * @param callback
      */
-    public void addVisibilityCallback(VisibilityCallback callback) {
-        if (callback != null)
-            mVisibilityCallbackHolder.put(callback, "");
+    fun addVisibilityCallback(callback: VisibilityCallback?) {
+        if (callback != null) {
+            _visibilityCallbackHolder[callback] = ""
+        }
     }
 
     /**
      * 移除回调
-     *
-     * @param callback
      */
-    public void removeVisibilityCallback(VisibilityCallback callback) {
-        if (callback != null)
-            mVisibilityCallbackHolder.remove(callback);
-    }
-
-    private Collection<VisibilityCallback> getVisibilityCallbacks() {
-        return Collections.unmodifiableCollection(mVisibilityCallbackHolder.keySet());
+    fun removeVisibilityCallback(callback: VisibilityCallback?) {
+        if (callback != null) {
+            _visibilityCallbackHolder.remove(callback)
+        }
     }
 
     /**
-     * Item名称
-     *
-     * @return
+     * Item是否可见
      */
-    public String getName() {
-        return mName;
-    }
-
-    /**
-     * 返回Item所在的等级
-     *
-     * @return
-     */
-    public FVisibleLevel getLevel() {
-        return mLevel;
-    }
-
-    /**
-     * 返回Item是否可见
-     *
-     * @return
-     */
-    public boolean isVisible() {
-        return getLevel().isVisible() && getLevel().getVisibleItem() == this;
-    }
+    val isVisible: Boolean
+        get() = _level.isVisible && _level.visibleItem == this
 
     /**
      * 设置Item的子等级
-     *
-     * @param level
      */
-    public void setChildLevel(FVisibleLevel level) {
-        if (level == mLevel)
-            throw new IllegalArgumentException("child level should not be current level");
-
-        mChildLevel = level;
+    fun setChildLevel(level: FVisibleLevel) {
+        require(level != this._level) { "child level should not be current level" }
+        _childLevel = level
     }
 
-    void notifyVisibility(boolean visible) {
-        for (VisibilityCallback callback : getVisibilityCallbacks()) {
-            callback.onLevelItemVisibilityChanged(visible, FVisibleLevelItem.this);
+    /**
+     * 通知可见状态
+     */
+    fun notifyVisibility(visible: Boolean) {
+        val callbacks = Collections.unmodifiableCollection(_visibilityCallbackHolder.keys)
+        for (callback in callbacks) {
+            callback.onLevelItemVisibilityChanged(visible, this@FVisibleLevelItem)
         }
-
-        if (mChildLevel != null)
-            mChildLevel.setVisible(visible);
+        _childLevel?.isVisible = visible
     }
 
-    public interface VisibilityCallback {
+    fun interface VisibilityCallback {
         /**
-         * item可见状态变化回调
-         *
-         * @param visible
-         * @param item
+         * Item可见状态变化回调
          */
-        void onLevelItemVisibilityChanged(boolean visible, FVisibleLevelItem item);
+        fun onLevelItemVisibilityChanged(visible: Boolean, item: FVisibleLevelItem)
     }
 }
