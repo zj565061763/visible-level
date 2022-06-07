@@ -52,16 +52,8 @@ abstract class FVisibleLevel protected constructor() {
     @Synchronized
     fun initItems(items: Array<String>?) {
         _isActive = false
-        val oldVisible = isVisible
         isVisible = false
-
-        if (oldVisible) {
-            val oldItem = currentItem
-            if (oldItem != EmptyItem) {
-                currentItem = EmptyItem
-                notifyItemVisibility(false, oldItem)
-            }
-        }
+        currentItem = EmptyItem
 
         if (items.isNullOrEmpty()) {
             return
