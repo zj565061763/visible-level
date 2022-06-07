@@ -35,22 +35,26 @@ public abstract class FVisibleLevel {
      * @return
      */
     public static synchronized FVisibleLevel get(Class<? extends FVisibleLevel> clazz) {
-        if (clazz == null)
+        if (clazz == null) {
             throw new NullPointerException("clazz is null");
+        }
 
-        if (clazz == FVisibleLevel.class)
+        if (clazz == FVisibleLevel.class) {
             throw new IllegalArgumentException("clazz is " + clazz.getName());
+        }
 
         FVisibleLevel level = MAP_LEVEL.get(clazz);
         if (level == null) {
             level = createLevel(clazz);
-            if (level == null)
+            if (level == null) {
                 throw new RuntimeException("create level failed " + clazz.getName());
+            }
 
             MAP_LEVEL.put(clazz, level);
 
-            if (sIsDebug)
+            if (sIsDebug) {
                 Log.i(FVisibleLevel.class.getSimpleName(), clazz.getName() + " create +++++");
+            }
 
             level.onCreate();
         }
@@ -61,8 +65,9 @@ public abstract class FVisibleLevel {
      * 清空所有等级
      */
     public static synchronized void clearLevel() {
-        if (sIsDebug)
+        if (sIsDebug) {
             Log.i(FVisibleLevel.class.getSimpleName(), "clearLevel");
+        }
 
         MAP_LEVEL.clear();
     }
@@ -85,13 +90,15 @@ public abstract class FVisibleLevel {
      * @param items
      */
     public void initItems(String[] items) {
-        if (items == null || items.length <= 0)
+        if (items == null || items.length <= 0) {
             throw new RuntimeException("items is null or empty " + getClass().getName());
+        }
 
         mMapLevelItem.clear();
         for (String item : items) {
-            if (TextUtils.isEmpty(item))
+            if (TextUtils.isEmpty(item)) {
                 throw new RuntimeException("item is empty");
+            }
 
             mMapLevelItem.put(item, EMPTY_ITEM);
         }
@@ -117,19 +124,22 @@ public abstract class FVisibleLevel {
     }
 
     private FVisibleLevelItem getOrCreateItem(String name) {
-        if (TextUtils.isEmpty(name))
+        if (TextUtils.isEmpty(name)) {
             throw new RuntimeException("name is empty");
+        }
 
         FVisibleLevelItem item = mMapLevelItem.get(name);
-        if (item == null)
+        if (item == null) {
             throw new RuntimeException("Item " + name + " was not found in level " + FVisibleLevel.this);
+        }
 
         if (item == EMPTY_ITEM) {
             item = new FVisibleLevelItem(name, FVisibleLevel.this);
             mMapLevelItem.put(name, item);
 
-            if (sIsDebug)
+            if (sIsDebug) {
                 Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " create item:" + name);
+            }
 
             onCreateItem(item);
         }
@@ -142,8 +152,9 @@ public abstract class FVisibleLevel {
      * @param callback
      */
     public final void addVisibilityCallback(VisibilityCallback callback) {
-        if (callback != null)
+        if (callback != null) {
             mVisibilityCallbackHolder.put(callback, "");
+        }
     }
 
     /**
@@ -152,8 +163,9 @@ public abstract class FVisibleLevel {
      * @param callback
      */
     public final void removeVisibilityCallback(VisibilityCallback callback) {
-        if (callback != null)
+        if (callback != null) {
             mVisibilityCallbackHolder.remove(callback);
+        }
     }
 
     private Collection<VisibilityCallback> getVisibilityCallbacks() {
@@ -186,8 +198,9 @@ public abstract class FVisibleLevel {
     public final void setVisible(boolean visible) {
         if (mIsVisible != visible) {
             mIsVisible = visible;
-            if (sIsDebug)
+            if (sIsDebug) {
                 Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " setVisible:" + visible);
+            }
 
             for (VisibilityCallback callback : getVisibilityCallbacks()) {
                 callback.onLevelVisibilityChanged(visible, FVisibleLevel.this);
@@ -202,19 +215,22 @@ public abstract class FVisibleLevel {
      * @param name
      */
     public final void visibleItem(String name) {
-        if (sIsDebug)
+        if (sIsDebug) {
             Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " visibleItem:" + name + " levelVisible:" + mIsVisible);
+        }
 
         final FVisibleLevelItem item = getOrCreateItem(name);
         final FVisibleLevelItem old = mVisibleItem;
         if (old != item) {
             mVisibleItem = item;
 
-            if (old != null)
+            if (old != null) {
                 notifyItemVisibility(false, old);
+            }
 
-            if (mIsVisible)
+            if (mIsVisible) {
                 notifyItemVisibility(true, item);
+            }
         }
     }
 
@@ -222,16 +238,19 @@ public abstract class FVisibleLevel {
      * 通知可见的Item
      */
     public final void notifyVisibleItem() {
-        if (mIsVisible)
+        if (mIsVisible) {
             notifyItemVisibility(true, mVisibleItem);
+        }
     }
 
     private void notifyItemVisibility(boolean visible, FVisibleLevelItem item) {
-        if (item == null)
+        if (item == null) {
             return;
+        }
 
-        if (sIsDebug)
+        if (sIsDebug) {
             Log.i(FVisibleLevel.class.getSimpleName(), getClass().getName() + " notifyItemVisibility visible:" + visible + " item:" + item.getName());
+        }
 
         if (mMapLevelItem.containsKey(item.getName())) {
             item.notifyVisibility(visible);
