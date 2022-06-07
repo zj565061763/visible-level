@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val _visibilityCallback = FVisibleLevel.VisibilityCallback { visible, level ->
-        Log.i(TAG, "Level VisibilityChanged level:$level visible:$visible")
+        Log.i(TAG, "Level VisibilityChanged level:$level -> $visible")
     }
 
     companion object {
