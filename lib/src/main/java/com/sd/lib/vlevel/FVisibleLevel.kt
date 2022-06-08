@@ -153,7 +153,7 @@ abstract class FVisibleLevel protected constructor() {
         if (!_isActive) return
         if (_itemHolder.containsKey(item.name)) {
             if (isDebug) {
-                Log.i(LogTag, "${this@FVisibleLevel} notifyItemVisibility ${item.name} -> $visible")
+                Log.i(LogTag, "${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $visible")
             }
             item.notifyVisibility(visible)
         }
