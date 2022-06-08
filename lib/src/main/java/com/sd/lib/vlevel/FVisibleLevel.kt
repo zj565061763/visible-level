@@ -29,11 +29,11 @@ abstract class FVisibleLevel protected constructor() {
     protected abstract fun onCreateItem(item: FVisibleLevelItem)
 
     /**
-     * 初始化Item，如果Item已存在，则跳过该Item，
+     * 设置Item列表，如果Item已存在，则跳过该Item，
      * 此方法可以重复调用来更新Item列表。
      */
     @Synchronized
-    fun initItems(items: Array<String>?) {
+    fun setItems(items: Array<String>?) {
         if (items.isNullOrEmpty()) {
             return
         }
@@ -47,9 +47,9 @@ abstract class FVisibleLevel protected constructor() {
 
         if (isDebug) {
             val logString = _itemHolder.keys.joinToString(
-                prefix = "${this@FVisibleLevel} initItems \r\n",
-                separator = "\r\n",
-                postfix = "\r\n",
+                prefix = "${this@FVisibleLevel} setItems [",
+                separator = ", ",
+                postfix = "]",
             )
             Log.i(LogTag, logString)
         }

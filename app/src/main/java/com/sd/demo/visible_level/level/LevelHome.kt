@@ -5,7 +5,7 @@ import com.sd.lib.vlevel.FVisibleLevelItem
 
 class LevelHome : FVisibleLevel() {
     override fun onCreate() {
-        initItems(
+        setItems(
             arrayOf(
                 ItemHome,
                 ItemLive,
