@@ -179,7 +179,7 @@ abstract class FVisibleLevel protected constructor() {
                 clazz.newInstance().also {
                     levelHolder[clazz] = it
                     if (isDebug) {
-                        Log.i(LogTag, "create level +++++ $it")
+                        Log.i(LogTag, "level create +++++ $it")
                     }
                 }
             }
@@ -194,7 +194,7 @@ abstract class FVisibleLevel protected constructor() {
         fun clear() {
             synchronized(levelHolder) {
                 if (isDebug) {
-                    Log.i(LogTag, "clear")
+                    Log.i(LogTag, "level clear !!!!!")
                 }
                 levelHolder.clear()
             }
@@ -211,7 +211,7 @@ abstract class FVisibleLevel protected constructor() {
 
             if (level != null) {
                 if (isDebug) {
-                    Log.i(LogTag, "remove $clazz")
+                    Log.i(LogTag, "level remove ----- $clazz")
                 }
                 level.clearItems()
                 synchronized(level) {
