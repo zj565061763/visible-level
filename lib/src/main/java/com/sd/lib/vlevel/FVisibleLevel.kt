@@ -5,9 +5,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class FVisibleLevel protected constructor() {
-    private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
     private var _isActive = false
     private var _isVisible = false
+    private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
 
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
@@ -36,8 +36,8 @@ abstract class FVisibleLevel protected constructor() {
     fun initItems(items: Array<String>?) {
         _isActive = false
         _isVisible = false
-        currentItem = EmptyItem
         _itemHolder.clear()
+        currentItem = EmptyItem
 
         if (items.isNullOrEmpty()) {
             return
