@@ -26,24 +26,24 @@ class MainActivity : AppCompatActivity() {
         _meView = MeView(this)
 
         _visibleLevel.apply {
-            getItem(LevelHome.ItemHome).addVisibilityCallback(_homeView)
-            getItem(LevelHome.ItemLive).addVisibilityCallback(_liveView)
-            getItem(LevelHome.ItemMe).addVisibilityCallback(_meView)
+            getItem(LevelHome.Home).addVisibilityCallback(_homeView)
+            getItem(LevelHome.Live).addVisibilityCallback(_liveView)
+            getItem(LevelHome.Me).addVisibilityCallback(_meView)
         }
 
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
             _binding.flContainer.removeAllViews()
             when (checkedId) {
                 R.id.btn_home -> {
-                    _visibleLevel.setCurrentItem(LevelHome.ItemHome)
+                    _visibleLevel.setCurrentItem(LevelHome.Home)
                     _binding.flContainer.addView(_homeView)
                 }
                 R.id.btn_live -> {
-                    _visibleLevel.setCurrentItem(LevelHome.ItemLive)
+                    _visibleLevel.setCurrentItem(LevelHome.Live)
                     _binding.flContainer.addView(_liveView)
                 }
                 R.id.btn_me -> {
-                    _visibleLevel.setCurrentItem(LevelHome.ItemMe)
+                    _visibleLevel.setCurrentItem(LevelHome.Me)
                     _binding.flContainer.addView(_meView)
                 }
                 else -> {}

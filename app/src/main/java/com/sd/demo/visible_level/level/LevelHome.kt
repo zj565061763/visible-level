@@ -7,9 +7,9 @@ class LevelHome : FVisibleLevel() {
     override fun onCreate() {
         setItems(
             arrayOf(
-                ItemHome,
-                ItemLive,
-                ItemMe,
+                Home,
+                Live,
+                Me,
             )
         )
     }
@@ -19,8 +19,8 @@ class LevelHome : FVisibleLevel() {
     }
 
     companion object {
-        const val ItemHome = "item_home"
-        const val ItemLive = "item_live"
-        const val ItemMe = "item_me"
+        const val Home = "Home"
+        const val Live = "Live"
+        const val Me = "Me"
     }
 }
