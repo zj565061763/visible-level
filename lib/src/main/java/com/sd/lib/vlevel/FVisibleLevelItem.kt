@@ -27,7 +27,7 @@ class FVisibleLevelItem internal constructor(
         synchronized(this.level) {
             val old = _childLevel
             if (old != childLevel) {
-                if (old?.parent == this) {
+                if (old?.parent == this@FVisibleLevelItem) {
                     old.parent = null
                 }
 
