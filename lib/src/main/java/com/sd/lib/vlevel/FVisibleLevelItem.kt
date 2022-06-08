@@ -50,6 +50,7 @@ class FVisibleLevelItem internal constructor(
     fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
         if (callback == null) return
         synchronized(this.level) {
+            if (_visibilityCallbackHolder.containsKey(callback)) return
             _visibilityCallbackHolder[callback] = isVisible
             if (callbackVisibility != isVisible) {
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
