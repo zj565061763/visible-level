@@ -20,8 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FVisibleLevel.isDebug = true
-
         setContentView(_binding.root)
         _homeView = HomeView(this)
         _liveView = LiveView(this)
@@ -71,5 +69,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "MainActivity"
+        init {
+            FVisibleLevel.isDebug = true
+        }
     }
 }
