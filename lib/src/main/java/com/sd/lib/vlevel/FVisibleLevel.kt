@@ -1,6 +1,7 @@
 package com.sd.lib.vlevel
 
 import android.util.Log
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class FVisibleLevel protected constructor() {
@@ -101,13 +102,18 @@ abstract class FVisibleLevel protected constructor() {
     @Synchronized
     fun setCurrentItem(name: String) {
         if (!_isActive) return
-        val item = getOrCreateItem(name)
+
         val old = currentItem
-        if (old == item) return
+        var uuid = ""
 
         if (sIsDebug) {
-            Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setCurrentItem ${old.name} -> $name isVisible $isVisible")
+            uuid = UUID.randomUUID().toString()
+            Log.i(FVisibleLevel::class.java.simpleName,
+                "${this@FVisibleLevel} setCurrentItem start (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
+
+        val item = getOrCreateItem(name)
+        if (old == item) return
 
         currentItem = item
 
@@ -116,6 +122,11 @@ abstract class FVisibleLevel protected constructor() {
         }
         if (isVisible) {
             notifyItemVisibility(true, item)
+        }
+
+        if (sIsDebug) {
+            Log.i(FVisibleLevel::class.java.simpleName,
+                "${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
     }
 
