@@ -33,11 +33,6 @@ abstract class FVisibleLevel protected constructor() {
      */
     @Synchronized
     fun initItems(items: Array<String>?) {
-        _isActive = false
-        _isVisible = false
-        _itemHolder.clear()
-        currentItem = EmptyItem
-
         if (items.isNullOrEmpty()) {
             return
         }
@@ -57,6 +52,16 @@ abstract class FVisibleLevel protected constructor() {
             )
             Log.i(FVisibleLevel::class.java.simpleName, logString)
         }
+    }
+
+    /**
+     * 清空Item
+     */
+    fun clearItems() {
+        _isActive = false
+        _isVisible = false
+        _itemHolder.clear()
+        currentItem = EmptyItem
     }
 
     /**
@@ -202,7 +207,7 @@ abstract class FVisibleLevel protected constructor() {
                 if (isDebug) {
                     Log.i(FVisibleLevel::class.java.simpleName, "remove $clazz")
                 }
-                level.initItems(null)
+                level.clearItems()
                 level.parent?.removeChildLevel(level)
             }
         }
