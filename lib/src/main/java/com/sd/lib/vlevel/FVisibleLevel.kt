@@ -49,7 +49,7 @@ abstract class FVisibleLevel protected constructor() {
         }
         _isActive = true
 
-        if (sIsDebug) {
+        if (isDebug) {
             val logString = items.joinToString(
                 prefix = "${this@FVisibleLevel} initItems \r\n",
                 separator = "\r\n",
@@ -76,7 +76,7 @@ abstract class FVisibleLevel protected constructor() {
         if (cache != EmptyItem) return cache
 
         return FVisibleLevelItem(name, this).also { item ->
-            if (sIsDebug) {
+            if (isDebug) {
                 Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} create item $name")
             }
             _itemHolder[name] = item
@@ -94,7 +94,7 @@ abstract class FVisibleLevel protected constructor() {
                 if (!_isActive) return
                 if (_isVisible != value) {
                     _isVisible = value
-                    if (sIsDebug) {
+                    if (isDebug) {
                         Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setVisible $value")
                     }
                     notifyItemVisibility(value, currentItem)
@@ -112,7 +112,7 @@ abstract class FVisibleLevel protected constructor() {
         val old = currentItem
         var uuid = ""
 
-        if (sIsDebug) {
+        if (isDebug) {
             uuid = UUID.randomUUID().toString()
             Log.i(FVisibleLevel::class.java.simpleName,
                 "${this@FVisibleLevel} setCurrentItem start (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
@@ -130,7 +130,7 @@ abstract class FVisibleLevel protected constructor() {
             notifyItemVisibility(true, item)
         }
 
-        if (sIsDebug) {
+        if (isDebug) {
             Log.i(FVisibleLevel::class.java.simpleName,
                 "${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
@@ -142,7 +142,7 @@ abstract class FVisibleLevel protected constructor() {
     private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
         if (!_isActive) return
         if (_itemHolder.containsKey(item.name)) {
-            if (sIsDebug) {
+            if (isDebug) {
                 Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} notifyItemVisibility ${item.name} -> $visible")
             }
             item.notifyVisibility(visible)
@@ -153,12 +153,7 @@ abstract class FVisibleLevel protected constructor() {
         private val levelHolder = mutableMapOf<Class<out FVisibleLevel>, FVisibleLevel>()
 
         @JvmStatic
-        private var sIsDebug = false
-
-        @JvmStatic
-        fun setDebug(isDebug: Boolean) {
-            sIsDebug = isDebug
-        }
+        var isDebug = false
 
         /**
          * 返回某个等级
@@ -172,7 +167,7 @@ abstract class FVisibleLevel protected constructor() {
                 // 创建并保存level
                 clazz.newInstance().also {
                     levelHolder[clazz] = it
-                    if (sIsDebug) {
+                    if (isDebug) {
                         Log.i(FVisibleLevel::class.java.simpleName, "create level +++++ $it")
                     }
                 }
@@ -187,7 +182,7 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun clear() {
             synchronized(levelHolder) {
-                if (sIsDebug) {
+                if (isDebug) {
                     Log.i(FVisibleLevel::class.java.simpleName, "clear")
                 }
                 levelHolder.clear()
@@ -204,7 +199,7 @@ abstract class FVisibleLevel protected constructor() {
             }
 
             if (level != null) {
-                if (sIsDebug) {
+                if (isDebug) {
                     Log.i(FVisibleLevel::class.java.simpleName, "remove $clazz")
                 }
                 level.initItems(null)

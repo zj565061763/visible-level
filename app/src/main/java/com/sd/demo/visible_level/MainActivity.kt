@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FVisibleLevel.setDebug(true)
+        FVisibleLevel.isDebug = true
 
         setContentView(_binding.root)
         _homeView = HomeView(this)
