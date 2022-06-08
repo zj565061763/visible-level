@@ -46,7 +46,7 @@ abstract class FVisibleLevel protected constructor() {
         _isActive = true
 
         if (isDebug) {
-            val logString = items.joinToString(
+            val logString = _itemHolder.keys.joinToString(
                 prefix = "${this@FVisibleLevel} initItems \r\n",
                 separator = "\r\n",
                 postfix = "\r\n",
