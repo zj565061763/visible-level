@@ -2,12 +2,11 @@ package com.sd.lib.vlevel
 
 import android.util.Log
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 abstract class FVisibleLevel protected constructor() {
     private var _isActive = false
     private var _isVisible = false
-    private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
+    private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
