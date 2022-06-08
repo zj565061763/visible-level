@@ -124,6 +124,9 @@ abstract class FVisibleLevel protected constructor() {
      */
     private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
         if (_itemHolder.containsKey(item.name)) {
+            if (sIsDebug) {
+                Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} notifyItemVisibility ${item.name} -> $visible")
+            }
             item.notifyVisibility(visible)
         }
     }
