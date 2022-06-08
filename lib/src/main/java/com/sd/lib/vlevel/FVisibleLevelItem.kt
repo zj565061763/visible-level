@@ -48,12 +48,11 @@ class FVisibleLevelItem internal constructor(
      */
     @JvmOverloads
     fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
-        if (callback != null) {
-            synchronized(this.level) {
-                _visibilityCallbackHolder[callback] = isVisible
-                if (callbackVisibility != isVisible) {
-                    callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
-                }
+        if (callback == null) return
+        synchronized(this.level) {
+            _visibilityCallbackHolder[callback] = isVisible
+            if (callbackVisibility != isVisible) {
+                callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
             }
         }
     }
@@ -62,10 +61,9 @@ class FVisibleLevelItem internal constructor(
      * 移除回调
      */
     fun removeVisibilityCallback(callback: VisibilityCallback?) {
-        if (callback != null) {
-            synchronized(this.level) {
-                _visibilityCallbackHolder.remove(callback)
-            }
+        if (callback == null) return
+        synchronized(this.level) {
+            _visibilityCallbackHolder.remove(callback)
         }
     }
 
