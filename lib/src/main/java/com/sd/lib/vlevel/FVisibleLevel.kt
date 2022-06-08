@@ -8,6 +8,10 @@ abstract class FVisibleLevel protected constructor() {
     private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
     private var _isActive = false
 
+    /** 父节点 */
+    var parent: FVisibleLevelItem? = null
+        internal set
+
     /**
      * 当前Item
      */
@@ -201,6 +205,7 @@ abstract class FVisibleLevel protected constructor() {
                     Log.i(FVisibleLevel::class.java.simpleName, "remove $clazz")
                 }
                 level.initItems(null)
+                level.parent?.removeChildLevel(level)
             }
         }
 
