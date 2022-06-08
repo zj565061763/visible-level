@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 abstract class FVisibleLevel protected constructor() {
     private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
-
     private var _isActive = false
 
     /**
@@ -32,12 +31,12 @@ abstract class FVisibleLevel protected constructor() {
         _isActive = false
         isVisible = false
         currentItem = EmptyItem
+        _itemHolder.clear()
 
         if (items.isNullOrEmpty()) {
             return
         }
 
-        _itemHolder.clear()
         for (item in items) {
             require(item.isNotEmpty()) { "item is empty" }
             _itemHolder[item] = EmptyItem
