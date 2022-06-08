@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 abstract class FVisibleLevel protected constructor() {
     private val _itemHolder = ConcurrentHashMap<String, FVisibleLevelItem>()
     private var _isActive = false
+    private var _isVisible = false
 
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
@@ -34,7 +35,7 @@ abstract class FVisibleLevel protected constructor() {
     @Synchronized
     fun initItems(items: Array<String>?) {
         _isActive = false
-        isVisible = false
+        _isVisible = false
         currentItem = EmptyItem
         _itemHolder.clear()
 
@@ -86,12 +87,13 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 是否可见
      */
-    var isVisible: Boolean = false
+    var isVisible: Boolean
+        get() = _isVisible
         set(value) {
             synchronized(this@FVisibleLevel) {
                 if (!_isActive) return
-                if (field != value) {
-                    field = value
+                if (_isVisible != value) {
+                    _isVisible = value
                     if (sIsDebug) {
                         Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} setVisible $value")
                     }
