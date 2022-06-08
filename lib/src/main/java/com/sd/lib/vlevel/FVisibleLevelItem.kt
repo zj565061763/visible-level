@@ -24,11 +24,13 @@ class FVisibleLevelItem internal constructor(
      */
     fun setChildLevel(childLevel: FVisibleLevel?) {
         require(level != childLevel) { "child level should not be current level" }
-        val old = _childLevel
-        if (old != childLevel) {
-            _childLevel = childLevel
-            old?.isVisible = false
-            childLevel?.isVisible = isVisible
+        synchronized(this.level) {
+            val old = _childLevel
+            if (old != childLevel) {
+                _childLevel = childLevel
+                old?.isVisible = false
+                childLevel?.isVisible = isVisible
+            }
         }
     }
 
@@ -39,7 +41,7 @@ class FVisibleLevelItem internal constructor(
     @JvmOverloads
     fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
         if (callback != null) {
-            synchronized(level) {
+            synchronized(this.level) {
                 _visibilityCallbackHolder[callback] = isVisible
                 if (callbackVisibility != isVisible) {
                     callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
@@ -53,7 +55,7 @@ class FVisibleLevelItem internal constructor(
      */
     fun removeVisibilityCallback(callback: VisibilityCallback?) {
         if (callback != null) {
-            synchronized(level) {
+            synchronized(this.level) {
                 _visibilityCallbackHolder.remove(callback)
             }
         }
@@ -105,6 +107,17 @@ class FVisibleLevelItem internal constructor(
                     _isNotifying = false
                     break
                 }
+            }
+        }
+    }
+
+    /**
+     * 移除子级
+     */
+    internal fun removeChildLevel(childLevel: FVisibleLevel) {
+        synchronized(this.level) {
+            if (_childLevel == childLevel) {
+                _childLevel = null
             }
         }
     }
