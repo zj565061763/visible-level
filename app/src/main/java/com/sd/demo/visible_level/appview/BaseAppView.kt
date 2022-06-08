@@ -10,8 +10,8 @@ open class BaseAppView(
     context: Context,
 ) : FrameLayout(context), FVisibleLevelItem.VisibilityCallback {
 
-    override fun onLevelItemVisibilityChanged(visible: Boolean, item: FVisibleLevelItem) {
+    override fun onLevelItemVisibilityChanged(item: FVisibleLevelItem) {
         Log.i(MainActivity.TAG,
-            "AppView VisibilityChanged ${item.name} -> $visible $this")
+            "AppView VisibilityChanged ${item.name} -> ${item.isVisible} $this")
     }
 }

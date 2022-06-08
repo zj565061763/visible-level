@@ -1,7 +1,5 @@
 package com.sd.lib.vlevel
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
@@ -126,16 +124,13 @@ abstract class FVisibleLevel protected constructor() {
      * 通知Item的可见状态
      */
     private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
-        callbackHandler.post {
-            if (_itemHolder.containsKey(item.name)) {
-                item.notifyVisibility(visible)
-            }
+        if (_itemHolder.containsKey(item.name)) {
+            item.notifyVisibility(visible)
         }
     }
 
     companion object {
         private val levelHolder = mutableMapOf<Class<out FVisibleLevel>, FVisibleLevel>()
-        private val callbackHandler = Handler(Looper.getMainLooper())
 
         @JvmStatic
         private var sIsDebug = false
