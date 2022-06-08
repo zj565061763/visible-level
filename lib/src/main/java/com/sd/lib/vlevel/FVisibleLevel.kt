@@ -40,8 +40,8 @@ abstract class FVisibleLevel protected constructor() {
 
         for (item in items) {
             require(item.isNotEmpty()) { "item is empty" }
-            val old = _itemHolder.put(item, EmptyItem)
-            require(old == null) { "there is already has an item with name:$item" }
+            if (_itemHolder.containsKey(item)) continue
+            _itemHolder[item] = EmptyItem
         }
         _isActive = true
 
