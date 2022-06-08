@@ -29,7 +29,8 @@ abstract class FVisibleLevel protected constructor() {
     protected abstract fun onCreateItem(item: FVisibleLevelItem)
 
     /**
-     * 初始化Item
+     * 初始化Item，如果Item已存在，则跳过该Item，
+     * 此方法可以重复调用来更新Item列表。
      */
     @Synchronized
     fun initItems(items: Array<String>?) {
@@ -57,6 +58,7 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 清空Item
      */
+    @Synchronized
     fun clearItems() {
         _isActive = false
         _isVisible = false
@@ -208,7 +210,9 @@ abstract class FVisibleLevel protected constructor() {
                     Log.i(FVisibleLevel::class.java.simpleName, "remove $clazz")
                 }
                 level.clearItems()
-                level.parent?.removeChildLevel(level)
+                synchronized(level) {
+                    level.parent?.removeChildLevel(level)
+                }
             }
         }
 
