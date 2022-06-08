@@ -89,7 +89,7 @@ abstract class FVisibleLevel protected constructor() {
     var isVisible: Boolean = false
         set(value) {
             synchronized(this@FVisibleLevel) {
-                if (!_isActive && value) return
+                if (!_isActive) return
                 if (field != value) {
                     field = value
                     if (sIsDebug) {
@@ -138,6 +138,7 @@ abstract class FVisibleLevel protected constructor() {
      * 通知Item的可见状态
      */
     private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
+        if (!_isActive) return
         if (_itemHolder.containsKey(item.name)) {
             if (sIsDebug) {
                 Log.i(FVisibleLevel::class.java.simpleName, "${this@FVisibleLevel} notifyItemVisibility ${item.name} -> $visible")
