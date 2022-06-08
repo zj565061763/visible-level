@@ -20,17 +20,17 @@ class FVisibleLevelItem internal constructor(
         private set
 
     /**
-     * 设置Item的子等级
+     * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级
      */
-    fun setChildLevel(childLevel: FVisibleLevel?) {
+    fun setChildLevel(childLevel: FVisibleLevel?): FVisibleLevel? {
         require(level != childLevel) { "child level should not be current level" }
         synchronized(this.level) {
             val old = _childLevel
             if (old != childLevel) {
                 _childLevel = childLevel
-                old?.isVisible = false
                 childLevel?.isVisible = isVisible
             }
+            return old
         }
     }
 
