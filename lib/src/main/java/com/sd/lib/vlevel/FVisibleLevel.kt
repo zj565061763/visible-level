@@ -5,9 +5,12 @@ import java.util.*
 
 abstract class FVisibleLevel protected constructor() {
     /** 当前等级是否可用 */
+    @Volatile
     private var _isEnabled = false
+
     /** 当前等级是否可见 */
     private var _isVisible = false
+
     /** 保存当前等级的Item */
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
@@ -97,13 +100,17 @@ abstract class FVisibleLevel protected constructor() {
     var isVisible: Boolean
         get() = _isVisible
         set(value) {
+            if (!_isEnabled) return
             synchronized(this@FVisibleLevel) {
-                if (!_isEnabled) return
                 if (_isVisible != value) {
                     _isVisible = value
                     logMsg("${this@FVisibleLevel} setVisible $value")
-                    notifyItemVisibilityLocked(value, currentItem)
+                    true
+                } else {
+                    false
                 }
+            }.let { changed ->
+                if (changed) notifyItemVisibility(value, currentItem)
             }
         }
 
@@ -122,9 +129,9 @@ abstract class FVisibleLevel protected constructor() {
         if (old == item) return
 
         currentItem = item
-        notifyItemVisibilityLocked(false, old)
+        notifyItemVisibility(false, old)
         if (isVisible) {
-            notifyItemVisibilityLocked(true, item)
+            notifyItemVisibility(true, item)
         }
 
         logMsg("${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
@@ -133,7 +140,7 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 通知Item的可见状态
      */
-    private fun notifyItemVisibilityLocked(visible: Boolean, item: FVisibleLevelItem) {
+    private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
         if (!_isEnabled) return
         if (item == EmptyItem) return
         if (_itemHolder.containsKey(item.name)) {
