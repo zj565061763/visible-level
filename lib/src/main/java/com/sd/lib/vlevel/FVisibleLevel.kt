@@ -33,9 +33,8 @@ abstract class FVisibleLevel protected constructor() {
      * 设置Item列表，如果Item已存在，则跳过该Item，
      * 此方法可以重复调用来更新Item列表。
      */
-    fun setItems(items: Array<String>?) {
-        if (items.isNullOrEmpty()) return
-
+    fun setItems(items: Array<String>) {
+        require(items.isNotEmpty()) { "items is empty" }
         synchronized(this@FVisibleLevel) {
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
