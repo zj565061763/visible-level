@@ -1,7 +1,5 @@
 package com.sd.lib.vlevel
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import java.util.*
 
@@ -22,8 +20,6 @@ abstract class FVisibleLevel protected constructor() {
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
         internal set
-
-    private val _handler = Handler(Looper.getMainLooper())
 
     /**
      * 创建回调
