@@ -110,7 +110,7 @@ abstract class FVisibleLevel protected constructor() {
             if (_isVisible != value) {
                 _isVisible = value
                 logMsg("${this@FVisibleLevel} setVisible $value")
-                notifyItemVisibility(value, currentItem)
+                notifyItemVisibilityLocked(value, currentItem)
             }
         }
     }
@@ -130,8 +130,8 @@ abstract class FVisibleLevel protected constructor() {
             if (oldItem == newItem) return
             currentItem = newItem
 
-            notifyItemVisibility(false, oldItem)
-            notifyItemVisibility(true, newItem)
+            notifyItemVisibilityLocked(false, oldItem)
+            notifyItemVisibilityLocked(true, newItem)
             logMsg("${this@FVisibleLevel} setCurrentItem finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
     }
@@ -139,17 +139,13 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 通知Item的可见状态
      */
-    private fun notifyItemVisibility(value: Boolean, item: FVisibleLevelItem) {
-        _handler.post {
-            synchronized(this@FVisibleLevel) {
-                if (!_isEnabled) return@synchronized
-                if (item == EmptyItem) return@synchronized
-                if (value && !_isVisible) return@synchronized
-                if (_itemHolder.containsKey(item.name)) {
-                    logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $value")
-                    item.notifyVisibility(value)
-                }
-            }
+    private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
+        if (!_isEnabled) return
+        if (item == EmptyItem) return
+        if (value && !_isVisible) return
+        if (_itemHolder.containsKey(item.name)) {
+            logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $value")
+            item.notifyVisibility(value)
         }
     }
 
