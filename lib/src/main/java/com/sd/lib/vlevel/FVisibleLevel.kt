@@ -108,7 +108,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 设置[name]为当前等级的可见Item
+     * 设置当前等级的可见Item为[name]
      */
     fun setCurrentItem(name: String) {
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
@@ -148,7 +148,7 @@ abstract class FVisibleLevel protected constructor() {
         var isDebug = false
 
         /**
-         * 返回某个等级
+         * 获取等级
          */
         @JvmStatic
         fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
@@ -218,7 +218,7 @@ var <T : FVisibleLevel> KClass<T>.isVisible: Boolean
     }
 
 /**
- * 设置[name]为当前等级的可见Item
+ * 设置当前等级的可见Item为[name]
  */
 fun <T : FVisibleLevel> KClass<T>.setCurrentItem(name: String) {
     FVisibleLevel.get(this.java).setCurrentItem(name)
