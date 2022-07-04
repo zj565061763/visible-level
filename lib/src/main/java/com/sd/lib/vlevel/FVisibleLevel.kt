@@ -183,17 +183,6 @@ abstract class FVisibleLevel protected constructor() {
         }
 
         /**
-         * 清空等级
-         */
-        @JvmStatic
-        fun clear() {
-            synchronized(this@Companion) {
-                logMsg("clear !!!!!")
-                sLevelHolder.clear()
-            }
-        }
-
-        /**
          * 空的Item
          */
         @JvmStatic
