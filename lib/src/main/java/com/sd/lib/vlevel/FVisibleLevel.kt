@@ -211,7 +211,7 @@ internal fun logMsg(msg: String) {
 /**
  * 当前等级可见状态
  */
-var <T : FVisibleLevel> KClass<T>.isVisible: Boolean
+var KClass<out FVisibleLevel>.isVisible: Boolean
     get() = FVisibleLevel.get(this.java).isVisible
     set(value) {
         FVisibleLevel.get(this.java).isVisible = value
@@ -220,20 +220,20 @@ var <T : FVisibleLevel> KClass<T>.isVisible: Boolean
 /**
  * 设置当前等级的可见Item为[name]
  */
-fun <T : FVisibleLevel> KClass<T>.setCurrentItem(name: String) {
+fun KClass<out FVisibleLevel>.setCurrentItem(name: String) {
     FVisibleLevel.get(this.java).setCurrentItem(name)
 }
 
 /**
  * 获取名称为[name]的Item
  */
-fun <T : FVisibleLevel> KClass<T>.getItem(name: String): FVisibleLevelItem {
+fun KClass<out FVisibleLevel>.getItem(name: String): FVisibleLevelItem {
     return FVisibleLevel.get(this.java).getItem(name)
 }
 
 /**
  * 移除等级
  */
-fun <T : FVisibleLevel> KClass<T>.remove() {
+fun KClass<out FVisibleLevel>.remove() {
     FVisibleLevel.remove(this.java)
 }
