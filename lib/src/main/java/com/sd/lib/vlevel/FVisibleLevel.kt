@@ -43,13 +43,12 @@ abstract class FVisibleLevel protected constructor() {
             _isEnabled = true
         }
 
-        if (isDebug) {
-            val logString = _itemHolder.keys.joinToString(
+        logMsg {
+            _itemHolder.keys.joinToString(
                 prefix = "${this@FVisibleLevel} addItems [",
                 separator = ", ",
                 postfix = "]",
             )
-            logMsg(logString)
         }
     }
 
@@ -58,7 +57,7 @@ abstract class FVisibleLevel protected constructor() {
      */
     fun clearItems() {
         synchronized(this@FVisibleLevel) {
-            logMsg("${this@FVisibleLevel} clearItems")
+            logMsg { "${this@FVisibleLevel} clearItems" }
             _isEnabled = false
             _isVisible = false
             _itemHolder.clear()
@@ -82,7 +81,7 @@ abstract class FVisibleLevel protected constructor() {
             if (cache != EmptyItem) return cache
 
             FVisibleLevelItem(name, this@FVisibleLevel).also { item ->
-                logMsg("${this@FVisibleLevel} create ($name)")
+                logMsg { "${this@FVisibleLevel} create ($name)" }
                 _itemHolder[name] = item
             }
         }.also {
@@ -102,7 +101,7 @@ abstract class FVisibleLevel protected constructor() {
             if (!_isEnabled) return
             if (_isVisible != value) {
                 _isVisible = value
-                logMsg("${this@FVisibleLevel} setVisible $value")
+                logMsg { "${this@FVisibleLevel} setVisible $value" }
                 notifyItemVisibilityLocked(value, currentItem)
             }
         }
@@ -122,10 +121,10 @@ abstract class FVisibleLevel protected constructor() {
             if (oldItem == newItem) return
             currentItem = newItem
 
-            logMsg("${this@FVisibleLevel} start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
+            logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid" }
             notifyItemVisibilityLocked(false, oldItem)
             notifyItemVisibilityLocked(true, newItem)
-            logMsg("${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
+            logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid" }
         }
     }
 
@@ -137,7 +136,7 @@ abstract class FVisibleLevel protected constructor() {
         if (item == EmptyItem) return
         if (value && !_isVisible) return
         if (_itemHolder.containsKey(item.name)) {
-            logMsg("${this@FVisibleLevel} item (${item.name}) -> $value")
+            logMsg { "${this@FVisibleLevel} item (${item.name}) -> $value" }
             item.notifyVisibility(value)
         }
     }
@@ -161,7 +160,7 @@ abstract class FVisibleLevel protected constructor() {
                 // 创建并保存level
                 clazz.newInstance().also { level ->
                     sLevelHolder[clazz] = level
-                    logMsg("+++++ $level")
+                    logMsg { "+++++ $level" }
                 }
             }.also {
                 it.onCreate()
@@ -176,7 +175,7 @@ abstract class FVisibleLevel protected constructor() {
             synchronized(this@Companion) {
                 sLevelHolder.remove(clazz)
             }?.let { level ->
-                logMsg("----- $clazz")
+                logMsg { "----- $clazz" }
                 level.clearItems()
                 // 通知父级Item移除当前level?
             }
@@ -199,9 +198,9 @@ abstract class FVisibleLevel protected constructor() {
     }
 }
 
-internal fun logMsg(msg: String) {
+internal inline fun logMsg(block: () -> String) {
     if (FVisibleLevel.isDebug) {
-        Log.i("FVisibleLevel", msg)
+        Log.i("FVisibleLevel", block())
     }
 }
 
