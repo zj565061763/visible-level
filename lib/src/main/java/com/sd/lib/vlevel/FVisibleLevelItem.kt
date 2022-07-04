@@ -26,17 +26,17 @@ class FVisibleLevelItem internal constructor(
         require(this.level != childLevel) { "child level should not be current level" }
         synchronized(this.level) {
             val old = _childLevel
-            if (old != childLevel) {
-                if (old?.parent == this@FVisibleLevelItem) {
-                    old.parent = null
-                }
+            if (old == childLevel) return null
 
-                _childLevel = childLevel
+            if (old?.parent == this@FVisibleLevelItem) {
+                old.parent = null
+            }
 
-                childLevel?.let {
-                    it.parent = this@FVisibleLevelItem
-                    it.isVisible = this@FVisibleLevelItem.isVisible
-                }
+            _childLevel = childLevel
+
+            childLevel?.let {
+                it.parent = this@FVisibleLevelItem
+                it.isVisible = this@FVisibleLevelItem.isVisible
             }
             return old
         }
