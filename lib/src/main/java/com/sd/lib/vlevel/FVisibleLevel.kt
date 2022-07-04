@@ -225,11 +225,8 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         val EmptyItem = FVisibleLevelItem("", object : FVisibleLevel() {
-            override fun onCreate() {
-            }
-
-            override fun onCreateItem(item: FVisibleLevelItem) {
-            }
+            override fun onCreate() {}
+            override fun onCreateItem(item: FVisibleLevelItem) {}
         })
     }
 }
