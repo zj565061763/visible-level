@@ -110,17 +110,6 @@ class FVisibleLevelItem internal constructor(
         }
     }
 
-    /**
-     * 移除子级
-     */
-    internal fun removeChildLevel(childLevel: FVisibleLevel) {
-        synchronized(this.level) {
-            if (_childLevel == childLevel) {
-                _childLevel = null
-            }
-        }
-    }
-
     fun interface VisibilityCallback {
         /**
          * Item可见状态变化回调
