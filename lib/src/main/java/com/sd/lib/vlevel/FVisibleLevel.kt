@@ -29,11 +29,10 @@ abstract class FVisibleLevel protected constructor() {
     protected abstract fun onCreateItem(item: FVisibleLevelItem)
 
     /**
-     * 设置Item列表，如果Item已存在，则跳过该Item，
-     * 此方法可以重复调用来更新Item列表。
+     * 添加Item，跳过重复的Item
      */
-    fun setItems(items: Array<String>) {
-        require(items.isNotEmpty()) { "items is empty" }
+    protected fun addItems(items: Array<String>) {
+        if (items.isEmpty()) return
         synchronized(this@FVisibleLevel) {
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
@@ -45,7 +44,7 @@ abstract class FVisibleLevel protected constructor() {
 
         if (isDebug) {
             val logString = _itemHolder.keys.joinToString(
-                prefix = "${this@FVisibleLevel} setItems [",
+                prefix = "${this@FVisibleLevel} addItems [",
                 separator = ", ",
                 postfix = "]",
             )
