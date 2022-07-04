@@ -10,6 +10,10 @@ import com.sd.demo.visible_level.level.LevelHome
 import com.sd.lib.vlevel.FVisibleLevel
 
 class MainActivity : AppCompatActivity() {
+    init {
+        FVisibleLevel.isDebug = true
+    }
+
     private val _binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private lateinit var _homeView: HomeView
@@ -64,13 +68,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        FVisibleLevel.remove(LevelHome::class.java)
+//        FVisibleLevel.remove(LevelHome::class.java)
     }
 
     companion object {
         const val TAG = "MainActivity"
-        init {
-            FVisibleLevel.isDebug = true
-        }
     }
 }
