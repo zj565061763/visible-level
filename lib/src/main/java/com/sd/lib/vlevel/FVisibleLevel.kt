@@ -35,18 +35,17 @@ abstract class FVisibleLevel protected constructor() {
      * 设置Item列表，如果Item已存在，则跳过该Item，
      * 此方法可以重复调用来更新Item列表。
      */
-    @Synchronized
     fun setItems(items: Array<String>?) {
-        if (items.isNullOrEmpty()) {
-            return
-        }
+        if (items.isNullOrEmpty()) return
 
-        for (item in items) {
-            require(item.isNotEmpty()) { "item is empty" }
-            if (_itemHolder.containsKey(item)) continue
-            _itemHolder[item] = EmptyItem
+        synchronized(this@FVisibleLevel) {
+            for (item in items) {
+                require(item.isNotEmpty()) { "item is empty" }
+                if (_itemHolder.containsKey(item)) continue
+                _itemHolder[item] = EmptyItem
+            }
+            _isEnabled = true
         }
-        _isEnabled = true
 
         if (isDebug) {
             val logString = _itemHolder.keys.joinToString(
