@@ -77,18 +77,19 @@ abstract class FVisibleLevel protected constructor() {
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
         require(name.isNotEmpty()) { "name is empty" }
-        synchronized(this@FVisibleLevel) {
+        return synchronized(this@FVisibleLevel) {
             if (!_isEnabled) return EmptyItem
 
             val cache = _itemHolder[name]
-            requireNotNull(cache) { "Item for $name was not found in level $this" }
+            requireNotNull(cache) { "Item ($name) was not found in level $this" }
             if (cache != EmptyItem) return cache
 
-            return FVisibleLevelItem(name, this).also { item ->
+            FVisibleLevelItem(name, this).also { item ->
                 logMsg("${this@FVisibleLevel} create item $name")
                 _itemHolder[name] = item
-                onCreateItem(item)
             }
+        }.also {
+            onCreateItem(it)
         }
     }
 
