@@ -149,18 +149,6 @@ abstract class FVisibleLevel protected constructor() {
         }
     }
 
-    /**
-     * 销毁
-     */
-    private fun destroy() {
-        synchronized(this@FVisibleLevel) {
-            logMsg("${this@FVisibleLevel} destroy")
-            clearItems()
-            // TODO wait review deadlock
-            parent?.removeChildLevel(this@FVisibleLevel)
-        }
-    }
-
     companion object {
         private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
 
@@ -177,9 +165,9 @@ abstract class FVisibleLevel protected constructor() {
                 if (cache != null) return cache
 
                 // 创建并保存level
-                clazz.newInstance().also {
-                    sLevelHolder[clazz] = it
-                    logMsg("+++++ $it")
+                clazz.newInstance().also { level ->
+                    sLevelHolder[clazz] = level
+                    logMsg("+++++ $level")
                 }
             }.also {
                 it.onCreate()
@@ -194,19 +182,6 @@ abstract class FVisibleLevel protected constructor() {
             synchronized(this@Companion) {
                 logMsg("clear !!!!!")
                 sLevelHolder.clear()
-            }
-        }
-
-        /**
-         * 移除等级
-         */
-        @JvmStatic
-        fun remove(clazz: Class<out FVisibleLevel>) {
-            synchronized(this@Companion) {
-                sLevelHolder.remove(clazz)
-            }?.let { level ->
-                logMsg("----- $clazz")
-                level.destroy()
             }
         }
 
