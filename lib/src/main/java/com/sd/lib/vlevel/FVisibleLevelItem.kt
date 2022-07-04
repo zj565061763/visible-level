@@ -14,13 +14,13 @@ class FVisibleLevelItem internal constructor(
     private val _visibilityCallbackHolder: MutableMap<VisibilityCallback, CallbackInfo> = WeakHashMap()
 
     /**
-     * Item是否可见
+     * 可见状态
      */
     var isVisible: Boolean = false
         private set
 
     /**
-     * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级
+     * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级。
      */
     fun setChildLevel(newChild: FVisibleLevel?): FVisibleLevel? {
         require(this.level != newChild) { "child level should not be current level" }
@@ -36,7 +36,7 @@ class FVisibleLevelItem internal constructor(
 
     /**
      * 添加[callback]，内部使用弱引用保存[callback]。
-     * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即把Item的状态通知到[callback]
+     * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即通知[callback]。
      */
     @JvmOverloads
     fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
@@ -62,7 +62,7 @@ class FVisibleLevelItem internal constructor(
 
     /** 是否正在通知回调对象 */
     private var _isNotifying = false
-    /** 是否需要重新通知回调对象 */
+    /** 是否需要重新同步可见状态给回调对象 */
     private var _shouldReSync = false
 
     /**
@@ -73,7 +73,7 @@ class FVisibleLevelItem internal constructor(
         isVisible = visible
 
         if (_isNotifying) {
-            // 如果正在通知中，则标志为等待通知后返回
+            // 如果正在通知中，则标志为需要重新同步
             _shouldReSync = true
             return
         }
@@ -86,7 +86,7 @@ class FVisibleLevelItem internal constructor(
             val copyHolder = _visibilityCallbackHolder.toMap()
             for ((callback, info) in copyHolder) {
                 if (info.isVisible == isVisible) {
-                    // 如果可见状态已经相同，则跳过当前对象
+                    // 可见状态已经相同，则跳过当前对象
                     continue
                 }
 
@@ -94,7 +94,7 @@ class FVisibleLevelItem internal constructor(
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
 
                 if (_shouldReSync) {
-                    // 停止本次循环，准备下一次循环
+                    // 停止本次遍历，准备下一次遍历
                     break
                 }
             }
