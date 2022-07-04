@@ -5,8 +5,13 @@ import java.util.*
 import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
-    /** 当前等级是否可用 */
-    private var _isEnabled = false
+    /** 当前等级是否已经被移除 */
+    @Volatile
+    private var _isRemoved = false
+        set(value) {
+            require(value) { "Can not set false to this flag" }
+            field = value
+        }
 
     /** 当前等级是否可见 */
     private var _isVisible = false
@@ -32,15 +37,14 @@ abstract class FVisibleLevel protected constructor() {
      * 添加Item，跳过重复的Item
      */
     fun addItems(items: Array<String>) {
+        if (_isRemoved) return
         if (items.isEmpty()) return
-        if (!hasLevel(this@FVisibleLevel)) return
         synchronized(this@FVisibleLevel) {
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
                 if (_itemHolder.containsKey(item)) continue
                 _itemHolder[item] = EmptyItem
             }
-            _isEnabled = true
         }
 
         logMsg {
@@ -53,12 +57,11 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 清空Item
+     * 清空Item并设置当前等级为不可见状态
      */
-    fun clearItems() {
+    fun reset() {
         synchronized(this@FVisibleLevel) {
-            logMsg { "${this@FVisibleLevel} clearItems" }
-            _isEnabled = false
+            logMsg { "${this@FVisibleLevel} reset" }
             _isVisible = false
             _itemHolder.clear()
             currentItem = EmptyItem
@@ -73,10 +76,9 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
+        if (_isRemoved) return EmptyItem
         require(name.isNotEmpty()) { "name is empty" }
         return synchronized(this@FVisibleLevel) {
-            if (!_isEnabled) return EmptyItem
-
             val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
             if (cache != EmptyItem) return cache
 
@@ -97,8 +99,8 @@ abstract class FVisibleLevel protected constructor() {
         set(value) = setVisibleInternal(value)
 
     private fun setVisibleInternal(value: Boolean) {
+        if (_isRemoved) return
         synchronized(this@FVisibleLevel) {
-            if (!_isEnabled) return
             if (_isVisible != value) {
                 _isVisible = value
                 logMsg { "${this@FVisibleLevel} setVisible $value" }
@@ -111,10 +113,9 @@ abstract class FVisibleLevel protected constructor() {
      * 设置当前等级可见Item为[name]
      */
     fun setCurrentItem(name: String) {
+        if (_isRemoved) return
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
         synchronized(this@FVisibleLevel) {
-            if (!_isEnabled) return
-
             val oldItem = currentItem
             val newItem = getOrCreateItem(name)
 
@@ -132,7 +133,7 @@ abstract class FVisibleLevel protected constructor() {
      * 通知Item的可见状态
      */
     private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
-        if (!_isEnabled) return
+        if (_isRemoved) return
         if (item == EmptyItem) return
         if (value && !_isVisible) return
         if (_itemHolder.containsKey(item.name)) {
@@ -173,10 +174,13 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
             synchronized(this@Companion) {
-                sLevelHolder.remove(clazz)
+                sLevelHolder.remove(clazz)?.also {
+                    // 标记为移除状态
+                    it._isRemoved = true
+                }
             }?.let { level ->
                 logMsg { "----- $clazz" }
-                level.clearItems()
+                level.reset()
                 // 通知父级Item移除当前level?
             }
         }
@@ -189,12 +193,6 @@ abstract class FVisibleLevel protected constructor() {
             override fun onCreate() {}
             override fun onCreateItem(item: FVisibleLevelItem) {}
         })
-
-        private fun hasLevel(level: FVisibleLevel): Boolean {
-            synchronized(this@Companion) {
-                return level == sLevelHolder[level.javaClass]
-            }
-        }
     }
 }
 
