@@ -101,7 +101,7 @@ abstract class FVisibleLevel protected constructor() {
      * 是否可见
      */
     var isVisible: Boolean
-        get() = _isVisible
+        get() = synchronized(this@FVisibleLevel) { _isVisible }
         set(value) = setVisibleInternal(value)
 
     private fun setVisibleInternal(value: Boolean) {
