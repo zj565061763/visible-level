@@ -36,7 +36,7 @@ class FVisibleLevelItem internal constructor(
 
     /**
      * 添加[callback]，内部使用弱引用保存[callback]。
-     * 如果[callback]的状态和当前Item的状态不一致，会立即把Item的状态通知到[callback]
+     * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即把Item的状态通知到[callback]
      */
     @JvmOverloads
     fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
