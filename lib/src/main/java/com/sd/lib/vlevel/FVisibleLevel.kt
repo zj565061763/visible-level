@@ -79,8 +79,7 @@ abstract class FVisibleLevel protected constructor() {
         return synchronized(this@FVisibleLevel) {
             if (!_isEnabled) return EmptyItem
 
-            val cache = _itemHolder[name]
-            requireNotNull(cache) { "Item ($name) was not found in level $this" }
+            val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
             if (cache != EmptyItem) return cache
 
             FVisibleLevelItem(name, this).also { item ->
