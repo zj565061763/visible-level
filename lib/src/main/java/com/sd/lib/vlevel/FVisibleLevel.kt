@@ -205,6 +205,7 @@ abstract class FVisibleLevel protected constructor() {
                 synchronized(level) {
                     logMsg("----- $clazz")
                     level.clearItems()
+                    // TODO wait review deadlock
                     level.parent?.removeChildLevel(level)
                 }
             }
