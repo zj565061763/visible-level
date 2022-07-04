@@ -176,6 +176,7 @@ abstract class FVisibleLevel protected constructor() {
             }?.let { level ->
                 logMsg("----- $clazz")
                 level.clearItems()
+                // 通知父级Item移除当前level?
             }
         }
 
