@@ -82,7 +82,7 @@ abstract class FVisibleLevel protected constructor() {
             if (cache != EmptyItem) return cache
 
             FVisibleLevelItem(name, this@FVisibleLevel).also { item ->
-                logMsg("${this@FVisibleLevel} create item $name")
+                logMsg("${this@FVisibleLevel} create ($name)")
                 _itemHolder[name] = item
             }
         }.also {
@@ -122,10 +122,10 @@ abstract class FVisibleLevel protected constructor() {
             if (oldItem == newItem) return
             currentItem = newItem
 
-            logMsg("${this@FVisibleLevel} setCurrentItem start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
+            logMsg("${this@FVisibleLevel} start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
             notifyItemVisibilityLocked(false, oldItem)
             notifyItemVisibilityLocked(true, newItem)
-            logMsg("${this@FVisibleLevel} setCurrentItem finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
+            logMsg("${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
     }
 
@@ -137,7 +137,7 @@ abstract class FVisibleLevel protected constructor() {
         if (item == EmptyItem) return
         if (value && !_isVisible) return
         if (_itemHolder.containsKey(item.name)) {
-            logMsg("${this@FVisibleLevel} notify (${item.name}) -> $value")
+            logMsg("${this@FVisibleLevel} item (${item.name}) -> $value")
             item.notifyVisibility(value)
         }
     }
