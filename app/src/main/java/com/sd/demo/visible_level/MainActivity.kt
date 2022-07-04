@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        FVisibleLevel.remove(LevelHome::class.java)
+        FVisibleLevel.remove(LevelHome::class.java)
     }
 
     companion object {

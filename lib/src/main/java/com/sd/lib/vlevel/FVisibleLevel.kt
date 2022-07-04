@@ -167,6 +167,19 @@ abstract class FVisibleLevel protected constructor() {
         }
 
         /**
+         * 移除等级
+         */
+        @JvmStatic
+        fun remove(clazz: Class<out FVisibleLevel>) {
+            synchronized(this@Companion) {
+                sLevelHolder.remove(clazz)
+            }?.let { level ->
+                logMsg("----- $clazz")
+                level.clearItems()
+            }
+        }
+
+        /**
          * 清空所有等级
          */
         @JvmStatic
