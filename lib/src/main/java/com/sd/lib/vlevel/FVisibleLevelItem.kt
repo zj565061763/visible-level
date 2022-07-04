@@ -11,7 +11,7 @@ class FVisibleLevelItem internal constructor(
     /** 子级 */
     private var _childLevel: FVisibleLevel? = null
     /** 回调 */
-    private val _visibilityCallbackHolder: MutableMap<VisibilityCallback, Boolean> = WeakHashMap()
+    private val _visibilityCallbackHolder: MutableMap<VisibilityCallback, CallbackInfo> = WeakHashMap()
 
     /**
      * Item是否可见
@@ -43,7 +43,7 @@ class FVisibleLevelItem internal constructor(
         if (callback == null) return
         synchronized(this.level) {
             if (_visibilityCallbackHolder.containsKey(callback)) return
-            _visibilityCallbackHolder[callback] = isVisible
+            _visibilityCallbackHolder[callback] = CallbackInfo(isVisible)
             if (callbackVisibility != isVisible) {
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
             }
@@ -82,21 +82,23 @@ class FVisibleLevelItem internal constructor(
             _isNotifying = true
             _pendingNotify = false
 
+            // --------------- Notify ---------------
             val copyHolder = _visibilityCallbackHolder.toMap()
-            for ((callback, callbackVisibility) in copyHolder) {
-                if (callbackVisibility == isVisible) {
+            for ((callback, info) in copyHolder) {
+                if (info.isVisible == isVisible) {
                     // 如果可见状态已经相同，则跳过当前对象
                     continue
                 }
 
-                _visibilityCallbackHolder[callback] = isVisible
+                info.isVisible = isVisible
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
 
                 if (_pendingNotify) {
-                    // 通知回调对象之后，如果状态被修改进入待通知状态，则停止本次循环，准备下一次循环
+                    // 发现状态被修改进入待通知状态，则停止本次循环，准备下一次循环
                     break
                 }
             }
+            // --------------- Notify ---------------
 
             if (!_pendingNotify) {
                 _childLevel?.isVisible = isVisible
@@ -117,3 +119,7 @@ class FVisibleLevelItem internal constructor(
         fun onLevelItemVisibilityChanged(item: FVisibleLevelItem)
     }
 }
+
+private class CallbackInfo(
+    var isVisible: Boolean = false,
+)
