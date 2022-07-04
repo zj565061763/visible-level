@@ -28,6 +28,11 @@ abstract class FVisibleLevel protected constructor() {
         onCreate()
     }
 
+    private fun notifyOnCreateItem(item: FVisibleLevelItem) {
+        if (_isRemoved) return
+        onCreateItem(item)
+    }
+
     /**
      * 等级创建回调
      */
@@ -95,7 +100,7 @@ abstract class FVisibleLevel protected constructor() {
                 _itemHolder[name] = item
             }
         }.also {
-            onCreateItem(it)
+            notifyOnCreateItem(it)
         }
     }
 
