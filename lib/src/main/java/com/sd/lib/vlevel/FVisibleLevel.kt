@@ -11,15 +11,13 @@ abstract class FVisibleLevel protected constructor() {
     /** 保存当前等级的Item */
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
+    /** 当前Item */
+    var currentItem: FVisibleLevelItem = EmptyItem
+        private set
+
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
         internal set
-
-    /**
-     * 当前Item
-     */
-    var currentItem: FVisibleLevelItem = EmptyItem
-        private set
 
     /**
      * 创建回调
@@ -60,13 +58,14 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 清空Item
      */
-    @Synchronized
     fun clearItems() {
         logMsg("${this@FVisibleLevel} clearItems")
-        _isEnabled = false
-        _isVisible = false
-        _itemHolder.clear()
-        currentItem = EmptyItem
+        synchronized(this@FVisibleLevel) {
+            _isEnabled = false
+            _isVisible = false
+            _itemHolder.clear()
+            currentItem = EmptyItem
+        }
     }
 
     /**
