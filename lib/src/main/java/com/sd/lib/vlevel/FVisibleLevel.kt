@@ -118,11 +118,11 @@ abstract class FVisibleLevel protected constructor() {
 
             val oldItem = currentItem
             val newItem = getOrCreateItem(name)
-            logMsg("${this@FVisibleLevel} setCurrentItem start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
 
             if (oldItem == newItem) return
             currentItem = newItem
 
+            logMsg("${this@FVisibleLevel} setCurrentItem start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
             notifyItemVisibilityLocked(false, oldItem)
             notifyItemVisibilityLocked(true, newItem)
             logMsg("${this@FVisibleLevel} setCurrentItem finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
