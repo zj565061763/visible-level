@@ -1,11 +1,12 @@
 package com.sd.lib.vlevel
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import java.util.*
 
 abstract class FVisibleLevel protected constructor() {
     /** 当前等级是否可用 */
-    @Volatile
     private var _isEnabled = false
 
     /** 当前等级是否可见 */
@@ -21,6 +22,8 @@ abstract class FVisibleLevel protected constructor() {
     /** 父节点 */
     var parent: FVisibleLevelItem? = null
         internal set
+
+    private val _handler = Handler(Looper.getMainLooper())
 
     /**
      * 创建回调
@@ -99,53 +102,50 @@ abstract class FVisibleLevel protected constructor() {
      */
     var isVisible: Boolean
         get() = _isVisible
-        set(value) {
+        set(value) = setVisibleInternal(value)
+
+    private fun setVisibleInternal(value: Boolean) {
+        synchronized(this@FVisibleLevel) {
             if (!_isEnabled) return
-            synchronized(this@FVisibleLevel) {
-                if (_isVisible != value) {
-                    _isVisible = value
-                    logMsg("${this@FVisibleLevel} setVisible $value")
-                    true
-                } else {
-                    false
-                }
-            }.let { changed ->
-                if (changed) notifyItemVisibility(value, currentItem)
+            if (_isVisible != value) {
+                _isVisible = value
+                logMsg("${this@FVisibleLevel} setVisible $value")
+                notifyItemVisibilityLocked(value, currentItem)
             }
         }
+    }
 
     /**
      * 设置当前Item
      */
-    @Synchronized
     fun setCurrentItem(name: String) {
-        if (!_isEnabled) return
-
-        val old = currentItem
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
-        logMsg("${this@FVisibleLevel} setCurrentItem start (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
+        synchronized(this@FVisibleLevel) {
+            if (!_isEnabled) return
 
-        val item = getOrCreateItem(name)
-        if (old == item) return
+            val oldItem = currentItem
+            val newItem = getOrCreateItem(name)
+            logMsg("${this@FVisibleLevel} setCurrentItem start (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
 
-        currentItem = item
-        notifyItemVisibility(false, old)
-        if (isVisible) {
-            notifyItemVisibility(true, item)
+            if (oldItem == newItem) return
+            currentItem = newItem
+
+            notifyItemVisibilityLocked(false, oldItem)
+            notifyItemVisibilityLocked(true, newItem)
+            logMsg("${this@FVisibleLevel} setCurrentItem finish (${oldItem.name}) -> ($name) isVisible $isVisible uuid:$uuid")
         }
-
-        logMsg("${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
     }
 
     /**
      * 通知Item的可见状态
      */
-    private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
+    private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
         if (!_isEnabled) return
         if (item == EmptyItem) return
+        if (value && !_isVisible) return
         if (_itemHolder.containsKey(item.name)) {
-            logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $visible")
-            item.notifyVisibility(visible)
+            logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $value")
+            item.notifyVisibility(value)
         }
     }
 
