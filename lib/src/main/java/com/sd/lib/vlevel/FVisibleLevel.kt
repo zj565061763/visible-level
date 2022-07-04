@@ -33,6 +33,7 @@ abstract class FVisibleLevel protected constructor() {
      */
     fun addItems(items: Array<String>) {
         if (items.isEmpty()) return
+        if (!hasLevel(this@FVisibleLevel)) return
         synchronized(this@FVisibleLevel) {
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
@@ -142,6 +143,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     companion object {
+        /** 保存等级对象 */
         private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
 
         @JvmStatic
@@ -199,6 +201,12 @@ abstract class FVisibleLevel protected constructor() {
             override fun onCreate() {}
             override fun onCreateItem(item: FVisibleLevelItem) {}
         })
+
+        private fun hasLevel(level: FVisibleLevel): Boolean {
+            synchronized(this@Companion) {
+                return level == sLevelHolder[level.javaClass]
+            }
+        }
     }
 }
 
