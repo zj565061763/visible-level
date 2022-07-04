@@ -4,8 +4,11 @@ import android.util.Log
 import java.util.*
 
 abstract class FVisibleLevel protected constructor() {
-    private var _isActive = false
+    /** 当前等级是否可用 */
+    private var _isEnabled = false
+    /** 当前等级是否可见 */
     private var _isVisible = false
+    /** 保存当前等级的Item */
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
     /** 父节点 */
@@ -43,7 +46,7 @@ abstract class FVisibleLevel protected constructor() {
             if (_itemHolder.containsKey(item)) continue
             _itemHolder[item] = EmptyItem
         }
-        _isActive = true
+        _isEnabled = true
 
         if (isDebug) {
             val logString = _itemHolder.keys.joinToString(
@@ -51,7 +54,7 @@ abstract class FVisibleLevel protected constructor() {
                 separator = ", ",
                 postfix = "]",
             )
-            Log.i(LOG_TAG, logString)
+            logMsg(logString)
         }
     }
 
@@ -61,7 +64,7 @@ abstract class FVisibleLevel protected constructor() {
     @Synchronized
     fun clearItems() {
         logMsg("${this@FVisibleLevel} clearItems")
-        _isActive = false
+        _isEnabled = false
         _isVisible = false
         _itemHolder.clear()
         currentItem = EmptyItem
@@ -77,16 +80,14 @@ abstract class FVisibleLevel protected constructor() {
     @Synchronized
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
         require(name.isNotEmpty()) { "name is empty" }
-        if (!_isActive) return EmptyItem
+        if (!_isEnabled) return EmptyItem
 
         val cache = _itemHolder[name]
         requireNotNull(cache) { "Item for $name was not found in level $this" }
         if (cache != EmptyItem) return cache
 
         return FVisibleLevelItem(name, this).also { item ->
-            if (isDebug) {
-                Log.i(LOG_TAG, "${this@FVisibleLevel} create item $name")
-            }
+            logMsg("${this@FVisibleLevel} create item $name")
             _itemHolder[name] = item
             onCreateItem(item)
         }
@@ -99,13 +100,11 @@ abstract class FVisibleLevel protected constructor() {
         get() = _isVisible
         set(value) {
             synchronized(this@FVisibleLevel) {
-                if (!_isActive) return
+                if (!_isEnabled) return
                 if (_isVisible != value) {
                     _isVisible = value
-                    if (isDebug) {
-                        Log.i(LOG_TAG, "${this@FVisibleLevel} setVisible $value")
-                    }
-                    notifyItemVisibility(value, currentItem)
+                    logMsg("${this@FVisibleLevel} setVisible $value")
+                    notifyItemVisibilityLocked(value, currentItem)
                 }
             }
         }
@@ -115,50 +114,49 @@ abstract class FVisibleLevel protected constructor() {
      */
     @Synchronized
     fun setCurrentItem(name: String) {
-        if (!_isActive) return
+        if (!_isEnabled) return
 
         val old = currentItem
-        var uuid = ""
-
-        if (isDebug) {
-            uuid = UUID.randomUUID().toString()
-            Log.i(LOG_TAG,
-                "${this@FVisibleLevel} setCurrentItem start (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
-        }
+        val uuid = if (isDebug) UUID.randomUUID().toString() else ""
+        logMsg("${this@FVisibleLevel} setCurrentItem start (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
 
         val item = getOrCreateItem(name)
         if (old == item) return
 
         currentItem = item
-
-        if (old != EmptyItem) {
-            notifyItemVisibility(false, old)
-        }
+        notifyItemVisibilityLocked(false, old)
         if (isVisible) {
-            notifyItemVisibility(true, item)
+            notifyItemVisibilityLocked(true, item)
         }
 
-        if (isDebug) {
-            Log.i(LOG_TAG,
-                "${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
-        }
+        logMsg("${this@FVisibleLevel} setCurrentItem finish (${old.name}) -> ($name) isVisible $isVisible uuid:$uuid")
     }
 
     /**
      * 通知Item的可见状态
      */
-    private fun notifyItemVisibility(visible: Boolean, item: FVisibleLevelItem) {
-        if (!_isActive) return
+    private fun notifyItemVisibilityLocked(visible: Boolean, item: FVisibleLevelItem) {
+        if (!_isEnabled) return
+        if (item == EmptyItem) return
         if (_itemHolder.containsKey(item.name)) {
-            if (isDebug) {
-                Log.i(LOG_TAG, "${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $visible")
-            }
+            logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $visible")
             item.notifyVisibility(visible)
         }
     }
 
+    /**
+     * 销毁
+     */
+    private fun destroy() {
+        synchronized(this@FVisibleLevel) {
+            logMsg("${this@FVisibleLevel} destroy")
+            clearItems()
+            // TODO wait review deadlock
+            parent?.removeChildLevel(this@FVisibleLevel)
+        }
+    }
+
     companion object {
-        private const val LOG_TAG = "FVisibleLevel"
         private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
 
         @JvmStatic
@@ -202,18 +200,8 @@ abstract class FVisibleLevel protected constructor() {
             synchronized(this@Companion) {
                 sLevelHolder.remove(clazz)
             }?.let { level ->
-                synchronized(level) {
-                    logMsg("----- $clazz")
-                    level.clearItems()
-                    // TODO wait review deadlock
-                    level.parent?.removeChildLevel(level)
-                }
-            }
-        }
-
-        internal fun logMsg(msg: String) {
-            if (isDebug) {
-                Log.i(LOG_TAG, msg)
+                logMsg("----- $clazz")
+                level.destroy()
             }
         }
 
@@ -225,5 +213,11 @@ abstract class FVisibleLevel protected constructor() {
             override fun onCreate() {}
             override fun onCreateItem(item: FVisibleLevelItem) {}
         })
+    }
+}
+
+internal fun logMsg(msg: String) {
+    if (FVisibleLevel.isDebug) {
+        Log.i("FVisibleLevel", msg)
     }
 }
