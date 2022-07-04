@@ -136,7 +136,7 @@ abstract class FVisibleLevel protected constructor() {
         if (item == EmptyItem) return
         if (value && !_isVisible) return
         if (_itemHolder.containsKey(item.name)) {
-            logMsg("${this@FVisibleLevel} notifyItemVisibility (${item.name}) -> $value")
+            logMsg("${this@FVisibleLevel} notify (${item.name}) -> $value")
             item.notifyVisibility(value)
         }
     }
