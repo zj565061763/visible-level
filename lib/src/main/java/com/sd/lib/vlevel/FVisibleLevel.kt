@@ -56,8 +56,8 @@ abstract class FVisibleLevel protected constructor() {
      * 清空Item
      */
     fun clearItems() {
-        logMsg("${this@FVisibleLevel} clearItems")
         synchronized(this@FVisibleLevel) {
+            logMsg("${this@FVisibleLevel} clearItems")
             _isEnabled = false
             _isVisible = false
             _itemHolder.clear()
