@@ -31,7 +31,7 @@ abstract class FVisibleLevel protected constructor() {
     /**
      * 添加Item，跳过重复的Item
      */
-    protected fun addItems(items: Array<String>) {
+    fun addItems(items: Array<String>) {
         if (items.isEmpty()) return
         synchronized(this@FVisibleLevel) {
             for (item in items) {
