@@ -19,12 +19,12 @@ abstract class FVisibleLevel protected constructor() {
         private set
 
     /**
-     * 创建回调
+     * 等级创建回调
      */
     protected abstract fun onCreate()
 
     /**
-     * 创建Item回调
+     * Item创建回调
      */
     protected abstract fun onCreateItem(item: FVisibleLevelItem)
 
@@ -108,7 +108,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 设置当前等级的可见Item为[name]
+     * 设置当前等级可见Item为[name]
      */
     fun setCurrentItem(name: String) {
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
@@ -181,7 +181,7 @@ abstract class FVisibleLevel protected constructor() {
         }
 
         /**
-         * 清空所有等级
+         * 清空等级
          */
         @JvmStatic
         fun clear() {
