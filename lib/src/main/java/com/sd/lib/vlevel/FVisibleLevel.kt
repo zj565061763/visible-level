@@ -67,7 +67,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 返回某个Item
+     * 获取名称为[name]的Item
      */
     fun getItem(name: String): FVisibleLevelItem {
         return getOrCreateItem(name)
@@ -223,6 +223,13 @@ var <T : FVisibleLevel> KClass<T>.isVisible: Boolean
  */
 fun <T : FVisibleLevel> KClass<T>.setCurrentItem(name: String) {
     FVisibleLevel.get(this.java).setCurrentItem(name)
+}
+
+/**
+ * 获取名称为[name]的Item
+ */
+fun <T : FVisibleLevel> KClass<T>.getItem(name: String): FVisibleLevelItem {
+    return FVisibleLevel.get(this.java).getItem(name)
 }
 
 /**

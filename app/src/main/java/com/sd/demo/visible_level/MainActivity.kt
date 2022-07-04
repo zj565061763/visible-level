@@ -7,10 +7,7 @@ import com.sd.demo.visible_level.appview.LiveView
 import com.sd.demo.visible_level.appview.MeView
 import com.sd.demo.visible_level.databinding.ActivityMainBinding
 import com.sd.demo.visible_level.level.LevelHome
-import com.sd.lib.vlevel.FVisibleLevel
-import com.sd.lib.vlevel.isVisible
-import com.sd.lib.vlevel.remove
-import com.sd.lib.vlevel.setCurrentItem
+import com.sd.lib.vlevel.*
 
 class MainActivity : AppCompatActivity() {
     init {
@@ -23,8 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var _liveView: LiveView
     private lateinit var _meView: MeView
 
-    private val _visibleLevel = FVisibleLevel.get(LevelHome::class.java)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(_binding.root)
@@ -32,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         _liveView = LiveView(this)
         _meView = MeView(this)
 
-        _visibleLevel.apply {
+        LevelHome::class.apply {
             getItem(LevelHome.Home).addVisibilityCallback(_homeView)
             getItem(LevelHome.Live).addVisibilityCallback(_liveView)
             getItem(LevelHome.Me).addVisibilityCallback(_meView)
