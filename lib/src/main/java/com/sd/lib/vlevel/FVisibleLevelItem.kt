@@ -35,7 +35,7 @@ class FVisibleLevelItem internal constructor(
 
                 childLevel?.let {
                     it.parent = this@FVisibleLevelItem
-                    it.isVisible = isVisible
+                    it.isVisible = this@FVisibleLevelItem.isVisible
                 }
             }
             return old
