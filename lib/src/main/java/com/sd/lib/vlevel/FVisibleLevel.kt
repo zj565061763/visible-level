@@ -42,9 +42,9 @@ abstract class FVisibleLevel protected constructor() {
      * 添加Item，跳过重复的Item
      */
     fun addItems(items: Array<String>) {
-        if (_isRemoved) return
         if (items.isEmpty()) return
         synchronized(this@FVisibleLevel) {
+            if (_isRemoved) return
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
                 if (_itemHolder.containsKey(item)) continue
