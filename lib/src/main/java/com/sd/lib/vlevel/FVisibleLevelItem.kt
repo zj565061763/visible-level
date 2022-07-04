@@ -1,7 +1,6 @@
 package com.sd.lib.vlevel
 
 import java.util.*
-import kotlin.reflect.KClass
 
 class FVisibleLevelItem internal constructor(
     /** Item名称 */
@@ -21,9 +20,10 @@ class FVisibleLevelItem internal constructor(
         private set
 
     /**
-     * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级。
+     * 设置子级，如果Item已经存在子级，则覆盖后返回旧的子级。
      */
-    fun setChildLevel(newChild: FVisibleLevel?): FVisibleLevel? {
+    fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
+        val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
         require(this.level != newChild) { "child level should not be current level" }
         synchronized(this.level) {
             val old = _childLevel
@@ -126,11 +126,3 @@ class FVisibleLevelItem internal constructor(
 private class CallbackInfo(
     var isVisible: Boolean = false,
 )
-
-/**
- * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级。
- */
-fun FVisibleLevelItem.setChildLevel(clazz: KClass<out FVisibleLevel>): FVisibleLevel? {
-    val level = FVisibleLevel.get(clazz.java)
-    return setChildLevel(level)
-}
