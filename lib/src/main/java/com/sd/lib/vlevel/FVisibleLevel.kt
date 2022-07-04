@@ -167,7 +167,9 @@ abstract class FVisibleLevel protected constructor() {
                     logMsg { "+++++ $level" }
                 }
             }.also {
-                it.onCreate()
+                if (!it._isRemoved) {
+                    it.onCreate()
+                }
             }
         }
 
