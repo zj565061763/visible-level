@@ -17,10 +17,6 @@ abstract class FVisibleLevel protected constructor() {
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
 
-    /** 父节点 */
-    var parent: FVisibleLevelItem? = null
-        internal set
-
     /**
      * 创建回调
      */

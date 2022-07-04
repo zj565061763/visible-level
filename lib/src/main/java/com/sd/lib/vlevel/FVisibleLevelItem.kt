@@ -22,22 +22,14 @@ class FVisibleLevelItem internal constructor(
     /**
      * 设置Item的子级，如果已经存在子级，则覆盖后返回旧的子级
      */
-    fun setChildLevel(childLevel: FVisibleLevel?): FVisibleLevel? {
-        require(this.level != childLevel) { "child level should not be current level" }
+    fun setChildLevel(newChild: FVisibleLevel?): FVisibleLevel? {
+        require(this.level != newChild) { "child level should not be current level" }
         synchronized(this.level) {
             val old = _childLevel
-            if (old == childLevel) return null
+            if (old == newChild) return null
 
-            if (old?.parent == this@FVisibleLevelItem) {
-                old.parent = null
-            }
-
-            _childLevel = childLevel
-
-            childLevel?.let {
-                it.parent = this@FVisibleLevelItem
-                it.isVisible = this@FVisibleLevelItem.isVisible
-            }
+            _childLevel = newChild
+            newChild?.isVisible = isVisible
             return old
         }
     }
