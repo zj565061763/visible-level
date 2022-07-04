@@ -62,8 +62,8 @@ class FVisibleLevelItem internal constructor(
 
     /** 是否正在通知回调对象 */
     private var _isNotifying = false
-    /** 是否等待通知回调对象 */
-    private var _pendingNotify = false
+    /** 是否需要重新通知回调对象 */
+    private var _shouldReSync = false
 
     /**
      * 通知可见状态
@@ -74,13 +74,13 @@ class FVisibleLevelItem internal constructor(
 
         if (_isNotifying) {
             // 如果正在通知中，则标志为等待通知后返回
-            _pendingNotify = true
+            _shouldReSync = true
             return
         }
 
         while (true) {
             _isNotifying = true
-            _pendingNotify = false
+            _shouldReSync = false
 
             // --------------- Notify ---------------
             val copyHolder = _visibilityCallbackHolder.toMap()
@@ -93,18 +93,20 @@ class FVisibleLevelItem internal constructor(
                 info.isVisible = isVisible
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
 
-                if (_pendingNotify) {
-                    // 发现状态被修改进入待通知状态，则停止本次循环，准备下一次循环
+                if (_shouldReSync) {
+                    // 停止本次循环，准备下一次循环
                     break
                 }
             }
             // --------------- Notify ---------------
 
-            if (!_pendingNotify) {
+            if (!_shouldReSync) {
                 _childLevel?.isVisible = isVisible
 
-                // 由于通知子级的时候也可能导致状态改变，所以这里需要再判断一下是否待通知状态
-                if (!_pendingNotify) {
+                // 通知子级之后状态可能改变，所以这里需要再判断一下
+                if (_shouldReSync) {
+                    // 状态被子级改变了，继续循环
+                } else {
                     _isNotifying = false
                     break
                 }
