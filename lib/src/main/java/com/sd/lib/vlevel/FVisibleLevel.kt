@@ -2,6 +2,7 @@ package com.sd.lib.vlevel
 
 import android.util.Log
 import java.util.*
+import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
     /** 当前等级是否可用 */
@@ -90,7 +91,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 是否可见
+     * 当前等级可见状态
      */
     var isVisible: Boolean
         get() = synchronized(this@FVisibleLevel) { _isVisible }
@@ -108,7 +109,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 设置当前Item
+     * 设置[name]为当前等级的可见Item
      */
     fun setCurrentItem(name: String) {
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
@@ -206,4 +207,27 @@ internal fun logMsg(msg: String) {
     if (FVisibleLevel.isDebug) {
         Log.i("FVisibleLevel", msg)
     }
+}
+
+/**
+ * 当前等级可见状态
+ */
+var <T : FVisibleLevel> KClass<T>.isVisible: Boolean
+    get() = FVisibleLevel.get(this.java).isVisible
+    set(value) {
+        FVisibleLevel.get(this.java).isVisible = value
+    }
+
+/**
+ * 设置[name]为当前等级的可见Item
+ */
+fun <T : FVisibleLevel> KClass<T>.setCurrentItem(name: String) {
+    FVisibleLevel.get(this.java).setCurrentItem(name)
+}
+
+/**
+ * 移除等级
+ */
+fun <T : FVisibleLevel> KClass<T>.remove() {
+    FVisibleLevel.remove(this.java)
 }

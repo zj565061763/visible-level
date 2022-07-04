@@ -8,6 +8,9 @@ import com.sd.demo.visible_level.appview.MeView
 import com.sd.demo.visible_level.databinding.ActivityMainBinding
 import com.sd.demo.visible_level.level.LevelHome
 import com.sd.lib.vlevel.FVisibleLevel
+import com.sd.lib.vlevel.isVisible
+import com.sd.lib.vlevel.remove
+import com.sd.lib.vlevel.setCurrentItem
 
 class MainActivity : AppCompatActivity() {
     init {
@@ -39,15 +42,15 @@ class MainActivity : AppCompatActivity() {
             _binding.flContainer.removeAllViews()
             when (checkedId) {
                 R.id.btn_home -> {
-                    _visibleLevel.setCurrentItem(LevelHome.Home)
+                    LevelHome::class.setCurrentItem(LevelHome.Home)
                     _binding.flContainer.addView(_homeView)
                 }
                 R.id.btn_live -> {
-                    _visibleLevel.setCurrentItem(LevelHome.Live)
+                    LevelHome::class.setCurrentItem(LevelHome.Live)
                     _binding.flContainer.addView(_liveView)
                 }
                 R.id.btn_me -> {
-                    _visibleLevel.setCurrentItem(LevelHome.Me)
+                    LevelHome::class.setCurrentItem(LevelHome.Me)
                     _binding.flContainer.addView(_meView)
                 }
                 else -> {}
@@ -58,17 +61,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        _visibleLevel.isVisible = true
+        LevelHome::class.isVisible = true
     }
 
     override fun onStop() {
         super.onStop()
-        _visibleLevel.isVisible = false
+        LevelHome::class.isVisible = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        FVisibleLevel.remove(LevelHome::class.java)
+        LevelHome::class.remove()
     }
 
     companion object {
