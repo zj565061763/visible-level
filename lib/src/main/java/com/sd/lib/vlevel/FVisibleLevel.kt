@@ -23,6 +23,11 @@ abstract class FVisibleLevel protected constructor() {
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
 
+    private fun notifyOnCreate() {
+        if (_isRemoved) return
+        onCreate()
+    }
+
     /**
      * 等级创建回调
      */
@@ -167,9 +172,7 @@ abstract class FVisibleLevel protected constructor() {
                     logMsg { "+++++ $level" }
                 }
             }.also {
-                if (!it._isRemoved) {
-                    it.onCreate()
-                }
+                it.notifyOnCreate()
             }
         }
 
