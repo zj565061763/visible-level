@@ -186,7 +186,7 @@ abstract class FVisibleLevel protected constructor() {
                 // 创建并保存level
                 clazz.newInstance().also { level ->
                     sLevelHolder[clazz] = level
-                    logMsg { "+++++ $level" }
+                    logMsg { "$level +++++" }
                 }
             }.also {
                 it.notifyOnCreate()
@@ -201,7 +201,7 @@ abstract class FVisibleLevel protected constructor() {
             synchronized(this@Companion) {
                 sLevelHolder.remove(clazz)
             }?.let { level ->
-                logMsg { "----- $clazz" }
+                logMsg { "$level -----" }
                 level.destroy()
             }
         }
