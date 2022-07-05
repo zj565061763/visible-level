@@ -67,18 +67,6 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     /**
-     * 清空Item并设置当前等级为不可见状态
-     */
-    fun reset() {
-        synchronized(this@FVisibleLevel) {
-            logMsg { "${this@FVisibleLevel} reset" }
-            _isVisible = false
-            _itemHolder.clear()
-            currentItem = EmptyItem
-        }
-    }
-
-    /**
      * 获取名称为[name]的Item
      */
     fun getItem(name: String): FVisibleLevelItem {
@@ -156,6 +144,26 @@ abstract class FVisibleLevel protected constructor() {
         }
     }
 
+    /**
+     * 清空Item并设置当前等级为不可见状态
+     */
+    fun reset() {
+        synchronized(this@FVisibleLevel) {
+            logMsg { "${this@FVisibleLevel} reset" }
+            _isVisible = false
+            _itemHolder.clear()
+            currentItem = EmptyItem
+        }
+    }
+
+    /** 销毁 */
+    private fun destroy() {
+        synchronized(this@FVisibleLevel) {
+            _isRemoved = true
+            reset()
+        }
+    }
+
     companion object {
         /** 保存等级对象 */
         private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
@@ -188,14 +196,10 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
             synchronized(this@Companion) {
-                sLevelHolder.remove(clazz)?.also {
-                    // 标记为移除状态
-                    it._isRemoved = true
-                }
+                sLevelHolder.remove(clazz)
             }?.let { level ->
                 logMsg { "----- $clazz" }
-                level.reset()
-                // 通知父级Item移除当前level?
+                level.destroy()
             }
         }
 
