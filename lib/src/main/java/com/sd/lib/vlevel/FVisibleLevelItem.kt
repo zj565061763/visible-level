@@ -52,9 +52,10 @@ class FVisibleLevelItem internal constructor(
      */
     fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        synchronized(FVisibleLevel::class.java) {
-            require(this.level != newChild) { "child level should not be current level" }
+        if (newChild?.isRemoved == true) return null
+        require(this.level != newChild) { "child level should not be current level" }
 
+        synchronized(FVisibleLevel::class.java) {
             val oldChild = _childLevel
             if (oldChild == newChild) return null
 
