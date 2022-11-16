@@ -93,7 +93,6 @@ abstract class FVisibleLevel protected constructor() {
                 name = name,
                 level = this@FVisibleLevel,
             ).also { item ->
-                logMsg { "${this@FVisibleLevel} create ($name)" }
                 _itemHolder[name] = item
             }
         }.also {
