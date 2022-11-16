@@ -14,7 +14,7 @@ abstract class FVisibleLevel protected constructor() {
     /** 当前等级是否已经被移除 */
     @Volatile
     var isRemoved = false
-        internal set(value) {
+        private set(value) {
             require(value) { "Can not set false to this flag" }
             field = value
         }
