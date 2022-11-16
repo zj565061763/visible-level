@@ -1,6 +1,7 @@
 package com.sd.demo.visible_level
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.visible_level.appview.HomeView
 import com.sd.demo.visible_level.appview.LiveView
@@ -68,8 +69,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         LevelHome::class.remove()
     }
+}
 
-    companion object {
-        const val TAG = "MainActivity"
-    }
+inline fun logMsg(block: () -> String) {
+    Log.i("FVisibleLevel-demo", block())
 }
