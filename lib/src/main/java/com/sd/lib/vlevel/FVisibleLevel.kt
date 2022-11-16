@@ -160,12 +160,6 @@ abstract class FVisibleLevel protected constructor() {
         }
     }
 
-    /** 销毁 */
-    private fun destroy() {
-        _isRemoved = true
-        reset()
-    }
-
     companion object {
         /** 保存等级对象 */
         private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
@@ -178,11 +172,10 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
-            return synchronized(this@Companion) {
+            return synchronized(FVisibleLevel::class.java) {
                 val cache = sLevelHolder[clazz]
                 if (cache != null) return cache
 
-                // 创建并保存level
                 clazz.newInstance().also { level ->
                     sLevelHolder[clazz] = level
                     logMsg { "$level +++++" }
@@ -197,11 +190,11 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
-            synchronized(this@Companion) {
-                sLevelHolder.remove(clazz)
-            }?.let { level ->
-                logMsg { "$level -----" }
-                level.destroy()
+            synchronized(FVisibleLevel::class.java) {
+                sLevelHolder.remove(clazz)?.let { level ->
+                    logMsg { "$level -----" }
+                    level._isRemoved = true
+                }
             }
         }
 
