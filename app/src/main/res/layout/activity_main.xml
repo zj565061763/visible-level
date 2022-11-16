@@ -8,7 +8,24 @@
         android:id="@+id/fl_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <com.sd.demo.visible_level.appview.HomeView
+            android:id="@+id/view_home"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.sd.demo.visible_level.appview.LiveView
+            android:id="@+id/view_live"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.sd.demo.visible_level.appview.MeView
+            android:id="@+id/view_me"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
 
     <RadioGroup
         android:id="@+id/radioMenu"
