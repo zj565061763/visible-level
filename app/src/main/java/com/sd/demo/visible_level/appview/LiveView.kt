@@ -14,9 +14,4 @@ class LiveView(
         super.onAttachedToWindow()
         LevelHome::class.getItem(LevelHome.Live).addCallback(this)
     }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        LevelHome::class.getItem(LevelHome.Live).removeCallback(this)
-    }
 }

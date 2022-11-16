@@ -14,9 +14,4 @@ class HomeView(
         super.onAttachedToWindow()
         LevelHome::class.getItem(LevelHome.Home).addCallback(this)
     }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        LevelHome::class.getItem(LevelHome.Home).removeCallback(this)
-    }
 }

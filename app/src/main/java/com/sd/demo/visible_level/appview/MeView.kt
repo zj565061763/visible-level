@@ -14,9 +14,4 @@ class MeView(
         super.onAttachedToWindow()
         LevelHome::class.getItem(LevelHome.Me).addCallback(this)
     }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        LevelHome::class.getItem(LevelHome.Me).removeCallback(this)
-    }
 }
