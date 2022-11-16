@@ -11,7 +11,7 @@ class FVisibleLevelItem internal constructor(
     /** 子级 */
     private var _childLevel: FVisibleLevel? = null
     /** 回调 */
-    private val _visibilityCallbackHolder: MutableMap<VisibilityCallback, CallbackInfo> = WeakHashMap()
+    private val _callbackHolder: MutableMap<Callback, CallbackInfo> = WeakHashMap()
 
     /**
      * 可见状态
@@ -24,16 +24,20 @@ class FVisibleLevelItem internal constructor(
      */
     fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        synchronized(this.level) {
+        var result: FVisibleLevel? = null
+
+        synchronized(this@FVisibleLevelItem) {
             require(this.level != newChild) { "child level should not be current level" }
 
-            val old = _childLevel
-            if (old == newChild) return null
+            val oldChild = _childLevel
+            if (oldChild == newChild) return null
 
             _childLevel = newChild
-            newChild?.isVisible = isVisible
-            return old
+            result = oldChild
         }
+
+        newChild?.isVisible = isVisible
+        return result
     }
 
     /**
@@ -41,24 +45,27 @@ class FVisibleLevelItem internal constructor(
      * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即通知[callback]。
      */
     @JvmOverloads
-    fun addVisibilityCallback(callback: VisibilityCallback?, callbackVisibility: Boolean = false) {
-        if (callback == null) return
-        synchronized(this.level) {
-            if (_visibilityCallbackHolder.containsKey(callback)) return
-            _visibilityCallbackHolder[callback] = CallbackInfo(isVisible)
-            if (callbackVisibility != isVisible) {
-                callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
+    fun addVisibilityCallback(callback: Callback, callbackVisibility: Boolean = false) {
+        val notifyCallback = synchronized(this@FVisibleLevelItem) {
+            if (_callbackHolder.containsKey(callback)) {
+                false
+            } else {
+                val visible = isVisible
+                _callbackHolder[callback] = CallbackInfo(visible)
+                callbackVisibility != visible
             }
+        }
+        if (notifyCallback) {
+            callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
         }
     }
 
     /**
      * 移除回调
      */
-    fun removeVisibilityCallback(callback: VisibilityCallback?) {
-        if (callback == null) return
-        synchronized(this.level) {
-            _visibilityCallbackHolder.remove(callback)
+    fun removeVisibilityCallback(callback: Callback) {
+        synchronized(this@FVisibleLevelItem) {
+            _callbackHolder.remove(callback)
         }
     }
 
@@ -85,7 +92,7 @@ class FVisibleLevelItem internal constructor(
             _shouldReSync = false
 
             // --------------- Notify ---------------
-            val copyHolder = _visibilityCallbackHolder.toMap()
+            val copyHolder = _callbackHolder.toMap()
             for ((callback, info) in copyHolder) {
                 if (info.isVisible == isVisible) {
                     // 可见状态已经相同，则跳过当前对象
@@ -116,7 +123,7 @@ class FVisibleLevelItem internal constructor(
         }
     }
 
-    fun interface VisibilityCallback {
+    fun interface Callback {
         /**
          * Item可见状态变化回调
          */
