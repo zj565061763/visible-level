@@ -47,9 +47,10 @@ abstract class FVisibleLevel protected constructor() {
      * 添加Item，跳过重复的Item
      */
     fun addItems(items: Array<String>) {
+        if (_isRemoved) return
         if (items.isEmpty()) return
+
         synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return
             for (item in items) {
                 require(item.isNotEmpty()) { "item is empty" }
                 if (_itemHolder.containsKey(item)) continue
@@ -74,9 +75,10 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
+        if (_isRemoved) return EmptyItem
         require(name.isNotEmpty()) { "name is empty" }
+
         return synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return EmptyItem
             val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
             if (cache != EmptyItem) return cache
 
@@ -100,8 +102,8 @@ abstract class FVisibleLevel protected constructor() {
         set(value) = setVisibleInternal(value)
 
     private fun setVisibleInternal(value: Boolean) {
+        if (_isRemoved) return
         synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return
             if (_isVisible != value) {
                 _isVisible = value
                 logMsg { "${this@FVisibleLevel} setVisible $value" }
@@ -114,10 +116,9 @@ abstract class FVisibleLevel protected constructor() {
      * 设置当前等级可见Item为[name]
      */
     fun setCurrentItem(name: String) {
+        if (_isRemoved) return
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
         synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return
-
             val oldItem = currentItem
             val newItem = getOrCreateItem(name)
 
