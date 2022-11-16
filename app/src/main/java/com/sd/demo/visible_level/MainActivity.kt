@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         _meView = MeView(this)
 
         LevelHome::class.apply {
-            getItem(LevelHome.Home).addVisibilityCallback(_homeView)
-            getItem(LevelHome.Live).addVisibilityCallback(_liveView)
-            getItem(LevelHome.Me).addVisibilityCallback(_meView)
+            getItem(LevelHome.Home).addCallback(_homeView)
+            getItem(LevelHome.Live).addCallback(_liveView)
+            getItem(LevelHome.Me).addCallback(_meView)
         }
 
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->

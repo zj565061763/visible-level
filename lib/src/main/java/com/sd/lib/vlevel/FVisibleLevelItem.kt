@@ -45,7 +45,7 @@ class FVisibleLevelItem internal constructor(
      * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即通知[callback]。
      */
     @JvmOverloads
-    fun addVisibilityCallback(callback: Callback, callbackVisibility: Boolean = false) {
+    fun addCallback(callback: Callback, callbackVisibility: Boolean = false) {
         val notifyCallback = synchronized(this@FVisibleLevelItem) {
             if (_callbackHolder.containsKey(callback)) {
                 false
@@ -63,7 +63,7 @@ class FVisibleLevelItem internal constructor(
     /**
      * 移除回调
      */
-    fun removeVisibilityCallback(callback: Callback) {
+    fun removeCallback(callback: Callback) {
         synchronized(this@FVisibleLevelItem) {
             _callbackHolder.remove(callback)
         }
@@ -123,7 +123,7 @@ class FVisibleLevelItem internal constructor(
         }
     }
 
-    fun interface Callback {
+    interface Callback {
         /**
          * Item可见状态变化回调
          */
