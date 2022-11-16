@@ -5,19 +5,19 @@ import java.util.*
 import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
-    /** 当前等级是否已经被移除 */
-    @Volatile
-    private var _isRemoved = false
-        set(value) {
-            require(value) { "Can not set false to this flag" }
-            field = value
-        }
-
     /** 当前等级是否可见 */
     private var _isVisible = false
 
     /** 保存当前等级的Item */
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
+
+    /** 当前等级是否已经被移除 */
+    @Volatile
+    var isRemoved = false
+        internal set(value) {
+            require(value) { "Can not set false to this flag" }
+            field = value
+        }
 
     /** 当前Item */
     var currentItem: FVisibleLevelItem = EmptyItem
@@ -31,7 +31,7 @@ abstract class FVisibleLevel protected constructor() {
         set(value) = setVisibleInternal(value)
 
     private fun notifyOnCreateItem(item: FVisibleLevelItem) {
-        if (_isRemoved) return
+        if (isRemoved) return
         onCreateItem(item)
     }
 
@@ -49,7 +49,7 @@ abstract class FVisibleLevel protected constructor() {
      * 添加Item，跳过重复的Item
      */
     fun addItems(items: Array<String>) {
-        if (_isRemoved) return
+        if (isRemoved) return
         if (items.isEmpty()) return
 
         synchronized(this@FVisibleLevel) {
@@ -77,7 +77,7 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
-        if (_isRemoved) return EmptyItem
+        if (isRemoved) return EmptyItem
         require(name.isNotEmpty()) { "name is empty" }
 
         return synchronized(this@FVisibleLevel) {
@@ -97,7 +97,7 @@ abstract class FVisibleLevel protected constructor() {
 
 
     private fun setVisibleInternal(value: Boolean) {
-        if (_isRemoved) return
+        if (isRemoved) return
         synchronized(this@FVisibleLevel) {
             if (_isVisible != value) {
                 _isVisible = value
@@ -111,7 +111,7 @@ abstract class FVisibleLevel protected constructor() {
      * 设置当前等级可见Item为[name]
      */
     fun setCurrentItem(name: String) {
-        if (_isRemoved) return
+        if (isRemoved) return
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
         synchronized(this@FVisibleLevel) {
             val oldItem = currentItem
@@ -131,7 +131,7 @@ abstract class FVisibleLevel protected constructor() {
      * 通知Item的可见状态
      */
     private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
-        if (_isRemoved) return
+        if (isRemoved) return
         if (item == EmptyItem) return
 
         if (value && !_isVisible) return
@@ -176,7 +176,7 @@ abstract class FVisibleLevel protected constructor() {
                     logMsg { "$level +++++" }
                 }
             }.also {
-                if (!it._isRemoved) {
+                if (!it.isRemoved) {
                     it.onCreate()
                 }
             }
@@ -190,7 +190,7 @@ abstract class FVisibleLevel protected constructor() {
             synchronized(FVisibleLevel::class.java) {
                 sLevelHolder.remove(clazz)?.let { level ->
                     logMsg { "$level -----" }
-                    level._isRemoved = true
+                    level.isRemoved = true
                 }
             }
         }
