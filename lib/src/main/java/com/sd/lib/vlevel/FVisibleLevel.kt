@@ -100,20 +100,20 @@ abstract class FVisibleLevel protected constructor() {
      * 设置当前等级可见Item为[name]
      */
     fun setCurrentItem(name: String) {
+        checkUiThread()
         if (isRemoved) return
         val uuid = if (isDebug) UUID.randomUUID().toString() else ""
-        synchronized(this@FVisibleLevel) {
-            val oldItem = currentItem
-            val newItem = getOrCreateItem(name)
 
-            if (oldItem == newItem) return
-            currentItem = newItem
+        val oldItem = currentItem
+        val newItem = getOrCreateItem(name)
 
-            logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
-            notifyItemVisibilityLocked(false, oldItem)
-            notifyItemVisibilityLocked(true, newItem)
-            logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
-        }
+        if (oldItem == newItem) return
+        currentItem = newItem
+
+        logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
+        notifyItemVisibilityLocked(false, oldItem)
+        notifyItemVisibilityLocked(true, newItem)
+        logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
     }
 
     /**
