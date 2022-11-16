@@ -125,10 +125,10 @@ abstract class FVisibleLevel protected constructor() {
             if (oldItem == newItem) return
             currentItem = newItem
 
-            logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) isVisible:$isVisible uuid:$uuid" }
+            logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
             notifyItemVisibilityLocked(false, oldItem)
             notifyItemVisibilityLocked(true, newItem)
-            logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) isVisible:$isVisible uuid:$uuid" }
+            logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
         }
     }
 
