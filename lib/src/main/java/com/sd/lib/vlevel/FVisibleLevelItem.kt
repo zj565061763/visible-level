@@ -120,6 +120,10 @@ class FVisibleLevelItem internal constructor(
         }
     }
 
+    private class CallbackInfo(
+        var isVisible: Boolean = false,
+    )
+
     interface Callback {
         /**
          * Item可见状态变化回调
@@ -128,6 +132,3 @@ class FVisibleLevelItem internal constructor(
     }
 }
 
-private class CallbackInfo(
-    var isVisible: Boolean = false,
-)
