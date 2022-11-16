@@ -96,7 +96,7 @@ class FVisibleLevelItem internal constructor(
                 callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
 
                 if (_shouldReSync) {
-                    // 停止本次遍历，准备下一次遍历
+                    // 通知callback的时候，外部触发了可见状态变化 停止本次遍历，准备下一次遍历。
                     break
                 }
             }
