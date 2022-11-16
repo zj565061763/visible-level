@@ -4,11 +4,12 @@ plugins {
 }
 
 android {
+    namespace 'com.sd.demo.visible_level'
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.sd.demo.visible_level"
         minSdkVersion 21
         targetSdkVersion 33
+        applicationId "com.sd.demo.visible_level"
         versionCode 1
         versionName "1.0"
     }
