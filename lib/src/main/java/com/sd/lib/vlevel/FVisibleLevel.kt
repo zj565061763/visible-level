@@ -10,11 +10,9 @@ abstract class FVisibleLevel protected constructor() {
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
     /** 当前等级是否可见 */
-    @Volatile
     private var _isVisible = false
 
     /** 当前等级是否已经被移除 */
-    @Volatile
     var isRemoved = false
         private set(value) {
             require(value) { "Can not set false to this flag" }
@@ -22,13 +20,10 @@ abstract class FVisibleLevel protected constructor() {
         }
 
     /** 当前Item */
-    @Volatile
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
 
-    /**
-     * 当前等级可见状态
-     */
+    /** 当前等级是否可见 */
     var isVisible: Boolean
         get() = _isVisible
         set(value) = setVisibleInternal(value)
@@ -74,35 +69,30 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
+        checkUiThread()
         require(name.isNotEmpty()) { "name is empty" }
-        return synchronized(this@FVisibleLevel) {
-            if (isRemoved) return EmptyItem
 
-            val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
-            if (cache != EmptyItem) return cache
+        if (isRemoved) return EmptyItem
 
-            FVisibleLevelItem(
-                name = name,
-                level = this@FVisibleLevel,
-            ).also { item ->
-                _itemHolder[name] = item
-            }
-        }.also {
-            if (!isRemoved) {
-                onCreateItem(it)
-            }
+        val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
+        if (cache != EmptyItem) return cache
+
+        return FVisibleLevelItem(
+            name = name,
+            level = this@FVisibleLevel,
+        ).also { item ->
+            _itemHolder[name] = item
+            onCreateItem(item)
         }
     }
 
-
     private fun setVisibleInternal(value: Boolean) {
+        checkUiThread()
         if (isRemoved) return
-        synchronized(this@FVisibleLevel) {
-            if (_isVisible != value) {
-                _isVisible = value
-                logMsg { "${this@FVisibleLevel} setVisible $value" }
-                notifyItemVisibilityLocked(value, currentItem)
-            }
+        if (_isVisible != value) {
+            _isVisible = value
+            logMsg { "${this@FVisibleLevel} setVisible $value" }
+            notifyItemVisibilityLocked(value, currentItem)
         }
     }
 
@@ -146,12 +136,11 @@ abstract class FVisibleLevel protected constructor() {
      * 清空Item并设置当前等级为不可见状态
      */
     fun reset() {
-        synchronized(this@FVisibleLevel) {
-            logMsg { "${this@FVisibleLevel} reset" }
-            _isVisible = false
-            _itemHolder.clear()
-            currentItem = EmptyItem
-        }
+        checkUiThread()
+        logMsg { "${this@FVisibleLevel} reset" }
+        _isVisible = false
+        _itemHolder.clear()
+        currentItem = EmptyItem
     }
 
     companion object {
