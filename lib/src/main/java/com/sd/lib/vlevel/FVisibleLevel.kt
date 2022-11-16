@@ -1,5 +1,6 @@
 package com.sd.lib.vlevel
 
+import android.os.Looper
 import android.util.Log
 import java.util.*
 import kotlin.reflect.KClass
@@ -208,6 +209,10 @@ internal inline fun logMsg(block: () -> String) {
     if (FVisibleLevel.isDebug) {
         Log.i("FVisibleLevel", block())
     }
+}
+
+internal fun checkUiThread() {
+    check(Looper.myLooper() == Looper.getMainLooper()) { "You should do this on ui thread." }
 }
 
 /**

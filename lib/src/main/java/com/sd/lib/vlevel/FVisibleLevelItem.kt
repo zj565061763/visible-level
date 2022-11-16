@@ -18,7 +18,6 @@ class FVisibleLevelItem internal constructor(
     /**
      * 可见状态
      */
-    @Volatile
     var isVisible: Boolean = false
         private set
 
@@ -28,20 +27,12 @@ class FVisibleLevelItem internal constructor(
      */
     @JvmOverloads
     fun addCallback(callback: Callback, callbackVisibility: Boolean = false) {
-        var notifyCallback = false
-        synchronized(FVisibleLevel::class.java) {
-            if (_callbackHolder.containsKey(callback)) return
-
-            val visible = isVisible
-            _callbackHolder[callback] = CallbackInfo(visible)
-
-            if (callbackVisibility != visible) {
-                notifyCallback = true
+        checkUiThread()
+        if (!_callbackHolder.containsKey(callback)) {
+            _callbackHolder[callback] = CallbackInfo(isVisible)
+            if (callbackVisibility != isVisible) {
+                callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
             }
-        }
-
-        if (notifyCallback) {
-            notifyCallback(callback)
         }
     }
 
@@ -49,28 +40,26 @@ class FVisibleLevelItem internal constructor(
      * 移除回调
      */
     fun removeCallback(callback: Callback) {
-        synchronized(FVisibleLevel::class.java) {
-            _callbackHolder.remove(callback)
-        }
+        checkUiThread()
+        _callbackHolder.remove(callback)
     }
 
     /**
      * 设置子级，如果Item已经存在子级，则覆盖后返回旧的子级。
      */
     fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
+        checkUiThread()
+
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        if (newChild?.isRemoved == true) return null
-        require(this.level != newChild) { "child level should not be current level" }
+        require(this.level != newChild) { "Child level should not be current level." }
 
-        synchronized(FVisibleLevel::class.java) {
-            val oldChild = _childLevel
-            if (oldChild == newChild) return null
+        val oldChild = _childLevel
+        if (oldChild == newChild) return null
 
-            _childLevel = newChild
-            _childLevel?.isVisible = isVisible
+        _childLevel = newChild
+        _childLevel?.isVisible = isVisible
 
-            return oldChild
-        }
+        return oldChild
     }
 
 
