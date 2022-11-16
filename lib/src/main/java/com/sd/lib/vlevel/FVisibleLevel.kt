@@ -166,18 +166,15 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
-            return synchronized(FVisibleLevel::class.java) {
-                val cache = sLevelHolder[clazz]
-                if (cache != null) return cache
+            checkUiThread()
 
-                clazz.newInstance().also { level ->
-                    sLevelHolder[clazz] = level
-                    logMsg { "$level +++++" }
-                }
-            }.also {
-                if (!it.isRemoved) {
-                    it.onCreate()
-                }
+            val cache = sLevelHolder[clazz]
+            if (cache != null) return cache
+
+            return clazz.newInstance().also { level ->
+                sLevelHolder[clazz] = level
+                logMsg { "$level +++++" }
+                level.onCreate()
             }
         }
 
@@ -186,11 +183,10 @@ abstract class FVisibleLevel protected constructor() {
          */
         @JvmStatic
         fun remove(clazz: Class<out FVisibleLevel>) {
-            synchronized(FVisibleLevel::class.java) {
-                sLevelHolder.remove(clazz)?.let { level ->
-                    logMsg { "$level -----" }
-                    level.isRemoved = true
-                }
+            checkUiThread()
+            sLevelHolder.remove(clazz)?.let { level ->
+                logMsg { "$level -----" }
+                level.isRemoved = true
             }
         }
 
