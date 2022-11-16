@@ -14,14 +14,14 @@ class FVisibleLevelItem internal constructor(
     private val _callbackHolder: MutableMap<Callback, CallbackInfo> = WeakHashMap()
 
     /**
-     * 可见状态
+     * 是否可见
      */
     var isVisible: Boolean = false
         private set
 
     /**
      * 添加[callback]，内部使用弱引用保存[callback]。
-     * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即通知[callback]。
+     * 如果[callback]的状态[callbackVisibility]和当前Item的[isVisible]状态不一致，会立即通知[callback]。
      */
     @JvmOverloads
     fun addCallback(callback: Callback, callbackVisibility: Boolean = false) {
