@@ -30,11 +30,6 @@ abstract class FVisibleLevel protected constructor() {
         get() = synchronized(this@FVisibleLevel) { _isVisible }
         set(value) = setVisibleInternal(value)
 
-    private fun notifyOnCreate() {
-        if (_isRemoved) return
-        onCreate()
-    }
-
     private fun notifyOnCreateItem(item: FVisibleLevelItem) {
         if (_isRemoved) return
         onCreateItem(item)
@@ -181,7 +176,9 @@ abstract class FVisibleLevel protected constructor() {
                     logMsg { "$level +++++" }
                 }
             }.also {
-                it.notifyOnCreate()
+                if (!it._isRemoved) {
+                    it.onCreate()
+                }
             }
         }
 
