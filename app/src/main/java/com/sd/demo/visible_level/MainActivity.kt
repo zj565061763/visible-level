@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(_binding.root)
 
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
-            _binding.flContainer.removeAllViews()
             when (checkedId) {
                 R.id.btn_home -> {
                     LevelHome::class.setCurrentItem(LevelHome.Home)
