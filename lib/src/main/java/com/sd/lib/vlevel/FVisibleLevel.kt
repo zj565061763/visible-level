@@ -139,7 +139,10 @@ abstract class FVisibleLevel protected constructor() {
     private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
         if (_isRemoved) return
         if (item == EmptyItem) return
+
         if (value && !_isVisible) return
+        if (value && currentItem != item) return
+
         if (_itemHolder.containsKey(item.name)) {
             logMsg { "${this@FVisibleLevel} item (${item.name}) -> $value" }
             item.notifyVisibility(value)
