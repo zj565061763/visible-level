@@ -42,12 +42,13 @@ abstract class FVisibleLevel protected constructor() {
      * 添加Item，跳过重复的Item
      */
     fun addItems(items: Array<String>) {
+        checkUiThread()
         if (items.isEmpty()) return
-        synchronized(FVisibleLevel::class.java) {
-            if (isRemoved) return
-            for (item in items) {
-                require(item.isNotEmpty()) { "item is empty" }
-                if (_itemHolder.containsKey(item)) continue
+        if (isRemoved) return
+
+        for (item in items) {
+            require(item.isNotEmpty()) { "item is empty" }
+            if (!_itemHolder.containsKey(item)) {
                 _itemHolder[item] = EmptyItem
             }
         }
