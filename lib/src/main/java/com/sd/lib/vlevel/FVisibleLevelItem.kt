@@ -16,6 +16,7 @@ class FVisibleLevelItem internal constructor(
     /**
      * 可见状态
      */
+    @Volatile
     var isVisible: Boolean = false
         private set
 
@@ -24,20 +25,17 @@ class FVisibleLevelItem internal constructor(
      */
     fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        var result: FVisibleLevel? = null
-
-        synchronized(this@FVisibleLevelItem) {
+        synchronized(FVisibleLevel::class.java) {
             require(this.level != newChild) { "child level should not be current level" }
 
             val oldChild = _childLevel
             if (oldChild == newChild) return null
 
             _childLevel = newChild
-            result = oldChild
-        }
+            newChild?.isVisible = isVisible
 
-        newChild?.isVisible = isVisible
-        return result
+            return oldChild
+        }
     }
 
     /**
@@ -46,17 +44,15 @@ class FVisibleLevelItem internal constructor(
      */
     @JvmOverloads
     fun addCallback(callback: Callback, callbackVisibility: Boolean = false) {
-        val notifyCallback = synchronized(this@FVisibleLevelItem) {
-            if (_callbackHolder.containsKey(callback)) {
-                false
-            } else {
-                val visible = isVisible
-                _callbackHolder[callback] = CallbackInfo(visible)
-                callbackVisibility != visible
+        synchronized(FVisibleLevel::class.java) {
+            if (_callbackHolder.containsKey(callback)) return
+
+            val visible = isVisible
+            _callbackHolder[callback] = CallbackInfo(visible)
+
+            if (callbackVisibility != visible) {
+                callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
             }
-        }
-        if (notifyCallback) {
-            callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
         }
     }
 
@@ -64,7 +60,7 @@ class FVisibleLevelItem internal constructor(
      * 移除回调
      */
     fun removeCallback(callback: Callback) {
-        synchronized(this@FVisibleLevelItem) {
+        synchronized(FVisibleLevel::class.java) {
             _callbackHolder.remove(callback)
         }
     }
