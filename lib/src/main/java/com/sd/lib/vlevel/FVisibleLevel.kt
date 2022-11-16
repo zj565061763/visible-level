@@ -72,7 +72,6 @@ abstract class FVisibleLevel protected constructor() {
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
         checkUiThread()
         require(name.isNotEmpty()) { "name is empty" }
-
         if (isRemoved) return EmptyItem
 
         val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
