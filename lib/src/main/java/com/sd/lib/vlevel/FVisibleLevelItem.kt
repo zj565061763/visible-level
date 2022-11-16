@@ -26,6 +26,7 @@ class FVisibleLevelItem internal constructor(
      */
     @JvmOverloads
     fun addCallback(callback: Callback, callbackVisibility: Boolean = false) {
+        var notifyCallback = false
         synchronized(FVisibleLevel::class.java) {
             if (_callbackHolder.containsKey(callback)) return
 
@@ -33,8 +34,12 @@ class FVisibleLevelItem internal constructor(
             _callbackHolder[callback] = CallbackInfo(visible)
 
             if (callbackVisibility != visible) {
-                callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
+                notifyCallback = true
             }
+        }
+
+        if (notifyCallback) {
+            notifyCallback(callback)
         }
     }
 
@@ -119,6 +124,10 @@ class FVisibleLevelItem internal constructor(
                 }
             }
         }
+    }
+
+    private fun notifyCallback(callback: Callback) {
+        callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
     }
 
     private class CallbackInfo(
