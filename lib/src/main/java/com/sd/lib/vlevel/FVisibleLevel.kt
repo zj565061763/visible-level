@@ -23,6 +23,13 @@ abstract class FVisibleLevel protected constructor() {
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
 
+    /**
+     * 当前等级可见状态
+     */
+    var isVisible: Boolean
+        get() = synchronized(this@FVisibleLevel) { _isVisible }
+        set(value) = setVisibleInternal(value)
+
     private fun notifyOnCreate() {
         if (_isRemoved) return
         onCreate()
@@ -94,12 +101,6 @@ abstract class FVisibleLevel protected constructor() {
         }
     }
 
-    /**
-     * 当前等级可见状态
-     */
-    var isVisible: Boolean
-        get() = synchronized(this@FVisibleLevel) { _isVisible }
-        set(value) = setVisibleInternal(value)
 
     private fun setVisibleInternal(value: Boolean) {
         if (_isRemoved) return
