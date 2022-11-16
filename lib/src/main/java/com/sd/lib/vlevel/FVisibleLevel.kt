@@ -6,6 +6,7 @@ import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
     /** 当前等级是否已经被移除 */
+    @Volatile
     private var _isRemoved = false
         set(value) {
             require(value) { "Can not set false to this flag" }
@@ -23,16 +24,12 @@ abstract class FVisibleLevel protected constructor() {
         private set
 
     private fun notifyOnCreate() {
-        synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return
-        }
+        if (_isRemoved) return
         onCreate()
     }
 
     private fun notifyOnCreateItem(item: FVisibleLevelItem) {
-        synchronized(this@FVisibleLevel) {
-            if (_isRemoved) return
-        }
+        if (_isRemoved) return
         onCreateItem(item)
     }
 
@@ -161,10 +158,8 @@ abstract class FVisibleLevel protected constructor() {
 
     /** 销毁 */
     private fun destroy() {
-        synchronized(this@FVisibleLevel) {
-            _isRemoved = true
-            reset()
-        }
+        _isRemoved = true
+        reset()
     }
 
     companion object {
