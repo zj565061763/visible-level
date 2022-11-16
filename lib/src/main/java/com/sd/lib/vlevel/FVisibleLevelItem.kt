@@ -24,8 +24,9 @@ class FVisibleLevelItem internal constructor(
      */
     fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        require(this.level != newChild) { "child level should not be current level" }
         synchronized(this.level) {
+            require(this.level != newChild) { "child level should not be current level" }
+
             val old = _childLevel
             if (old == newChild) return null
 
