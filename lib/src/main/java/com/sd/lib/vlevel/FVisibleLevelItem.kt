@@ -32,7 +32,7 @@ class FVisibleLevelItem internal constructor(
             if (oldChild == newChild) return null
 
             _childLevel = newChild
-            newChild?.isVisible = isVisible
+            _childLevel?.isVisible = isVisible
 
             return oldChild
         }
