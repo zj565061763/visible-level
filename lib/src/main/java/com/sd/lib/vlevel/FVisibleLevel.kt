@@ -5,11 +5,11 @@ import java.util.*
 import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
-    /** 当前等级是否可见 */
-    private var _isVisible = false
-
     /** 保存当前等级的Item */
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
+
+    /** 当前等级是否可见 */
+    private var _isVisible = false
 
     /** 当前等级是否已经被移除 */
     @Volatile
@@ -20,6 +20,7 @@ abstract class FVisibleLevel protected constructor() {
         }
 
     /** 当前Item */
+    @Volatile
     var currentItem: FVisibleLevelItem = EmptyItem
         private set
 
@@ -29,11 +30,6 @@ abstract class FVisibleLevel protected constructor() {
     var isVisible: Boolean
         get() = synchronized(this@FVisibleLevel) { _isVisible }
         set(value) = setVisibleInternal(value)
-
-    private fun notifyOnCreateItem(item: FVisibleLevelItem) {
-        if (isRemoved) return
-        onCreateItem(item)
-    }
 
     /**
      * 等级创建回调
@@ -77,10 +73,10 @@ abstract class FVisibleLevel protected constructor() {
     }
 
     private fun getOrCreateItem(name: String): FVisibleLevelItem {
-        if (isRemoved) return EmptyItem
         require(name.isNotEmpty()) { "name is empty" }
-
         return synchronized(this@FVisibleLevel) {
+            if (isRemoved) return EmptyItem
+
             val cache = requireNotNull(_itemHolder[name]) { "Item ($name) was not found in level ${this@FVisibleLevel}" }
             if (cache != EmptyItem) return cache
 
@@ -91,7 +87,9 @@ abstract class FVisibleLevel protected constructor() {
                 _itemHolder[name] = item
             }
         }.also {
-            notifyOnCreateItem(it)
+            if (!isRemoved) {
+                onCreateItem(it)
+            }
         }
     }
 
