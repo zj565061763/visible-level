@@ -9,6 +9,7 @@ abstract class FVisibleLevel protected constructor() {
     private val _itemHolder: MutableMap<String, FVisibleLevelItem> = mutableMapOf()
 
     /** 当前等级是否可见 */
+    @Volatile
     private var _isVisible = false
 
     /** 当前等级是否已经被移除 */
@@ -28,7 +29,7 @@ abstract class FVisibleLevel protected constructor() {
      * 当前等级可见状态
      */
     var isVisible: Boolean
-        get() = synchronized(this@FVisibleLevel) { _isVisible }
+        get() = _isVisible
         set(value) = setVisibleInternal(value)
 
     /**
