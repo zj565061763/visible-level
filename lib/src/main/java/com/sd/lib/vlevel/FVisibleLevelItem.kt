@@ -1,5 +1,7 @@
 package com.sd.lib.vlevel
 
+import android.os.Handler
+import android.os.Looper
 import java.util.*
 
 class FVisibleLevelItem internal constructor(
@@ -127,7 +129,13 @@ class FVisibleLevelItem internal constructor(
     }
 
     private fun notifyCallback(callback: Callback) {
-        callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            callback.onLevelItemVisibilityChanged(this@FVisibleLevelItem)
+        } else {
+            MainHandler.post {
+                notifyCallback(callback)
+            }
+        }
     }
 
     private class CallbackInfo(
@@ -139,6 +147,10 @@ class FVisibleLevelItem internal constructor(
          * Item可见状态变化回调
          */
         fun onLevelItemVisibilityChanged(item: FVisibleLevelItem)
+    }
+
+    companion object {
+        private val MainHandler = Handler(Looper.getMainLooper())
     }
 }
 
