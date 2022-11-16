@@ -21,24 +21,6 @@ class FVisibleLevelItem internal constructor(
         private set
 
     /**
-     * 设置子级，如果Item已经存在子级，则覆盖后返回旧的子级。
-     */
-    fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
-        val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        synchronized(FVisibleLevel::class.java) {
-            require(this.level != newChild) { "child level should not be current level" }
-
-            val oldChild = _childLevel
-            if (oldChild == newChild) return null
-
-            _childLevel = newChild
-            _childLevel?.isVisible = isVisible
-
-            return oldChild
-        }
-    }
-
-    /**
      * 添加[callback]，内部使用弱引用保存[callback]。
      * 如果[callback]的状态[callbackVisibility]和当前Item的状态不一致，会立即通知[callback]。
      */
@@ -64,6 +46,25 @@ class FVisibleLevelItem internal constructor(
             _callbackHolder.remove(callback)
         }
     }
+
+    /**
+     * 设置子级，如果Item已经存在子级，则覆盖后返回旧的子级。
+     */
+    fun setChildLevel(clazz: Class<out FVisibleLevel>?): FVisibleLevel? {
+        val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
+        synchronized(FVisibleLevel::class.java) {
+            require(this.level != newChild) { "child level should not be current level" }
+
+            val oldChild = _childLevel
+            if (oldChild == newChild) return null
+
+            _childLevel = newChild
+            _childLevel?.isVisible = isVisible
+
+            return oldChild
+        }
+    }
+
 
     /** 是否正在通知回调对象 */
     private var _isNotifying = false
