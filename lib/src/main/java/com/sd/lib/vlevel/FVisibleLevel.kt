@@ -89,11 +89,11 @@ abstract class FVisibleLevel protected constructor() {
     private fun setVisibleInternal(value: Boolean) {
         checkUiThread()
         if (isRemoved) return
-        if (_isVisible != value) {
-            _isVisible = value
-            logMsg { "${this@FVisibleLevel} setVisible $value" }
-            notifyItemVisibilityLocked(value, currentItem)
-        }
+        if (_isVisible == value) return
+
+        _isVisible = value
+        logMsg { "${this@FVisibleLevel} setVisible $value" }
+        notifyItemVisibilityLocked(value, currentItem)
     }
 
     /**
