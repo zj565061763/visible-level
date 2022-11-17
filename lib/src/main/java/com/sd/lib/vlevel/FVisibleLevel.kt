@@ -156,7 +156,6 @@ abstract class FVisibleLevel protected constructor() {
         @JvmStatic
         fun get(clazz: Class<out FVisibleLevel>): FVisibleLevel {
             checkUiThread()
-
             val cache = sLevelHolder[clazz]
             if (cache != null) return cache
 
