@@ -93,7 +93,7 @@ abstract class FVisibleLevel protected constructor() {
 
         _isVisible = value
         logMsg { "${this@FVisibleLevel} setVisible $value" }
-        notifyItemVisibilityLocked(value, currentItem)
+        notifyItemVisibility(value, currentItem)
     }
 
     /**
@@ -111,15 +111,15 @@ abstract class FVisibleLevel protected constructor() {
         currentItem = newItem
 
         logMsg { "${this@FVisibleLevel} start (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
-        notifyItemVisibilityLocked(false, oldItem)
-        notifyItemVisibilityLocked(true, newItem)
+        notifyItemVisibility(false, oldItem)
+        notifyItemVisibility(true, newItem)
         logMsg { "${this@FVisibleLevel} finish (${oldItem.name}) -> ($name) currentItem:${currentItem.name} isVisible:$isVisible uuid:$uuid" }
     }
 
     /**
      * 通知Item的可见状态
      */
-    private fun notifyItemVisibilityLocked(value: Boolean, item: FVisibleLevelItem) {
+    private fun notifyItemVisibility(value: Boolean, item: FVisibleLevelItem) {
         if (isRemoved) return
         if (item == EmptyItem) return
 
