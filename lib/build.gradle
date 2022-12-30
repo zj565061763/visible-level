@@ -6,7 +6,7 @@ plugins {
 
 def libGroupId = "com.sd.lib.android"
 def libArtifactId = "visible-level"
-def libVersionName = "1.2.0-beta02"
+def libVersionName = "1.2.0-beta03"
 
 android {
     namespace 'com.sd.lib.vlevel'
@@ -50,7 +50,6 @@ afterEvaluate {
                 artifactId = libArtifactId
                 version = libVersionName
 
-                // 上传源码
                 artifact generateSourcesJar
             }
         }
