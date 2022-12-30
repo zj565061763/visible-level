@@ -145,7 +145,7 @@ abstract class FVisibleLevel protected constructor() {
 
     companion object {
         /** 保存等级对象 */
-        private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = HashMap()
+        private val sLevelHolder: MutableMap<Class<out FVisibleLevel>, FVisibleLevel> = hashMapOf()
 
         @JvmStatic
         var isDebug = false
