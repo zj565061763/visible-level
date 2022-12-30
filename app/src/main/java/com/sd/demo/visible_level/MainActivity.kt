@@ -7,9 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.visible_level.databinding.ActivityMainBinding
 import com.sd.demo.visible_level.level.LevelHome
 import com.sd.lib.vlevel.FVisibleLevel
-import com.sd.lib.vlevel.isVisible
-import com.sd.lib.vlevel.remove
-import com.sd.lib.vlevel.setCurrentItem
+import com.sd.lib.vlevel.fVisibleLevel
+import com.sd.lib.vlevel.fVisibleLevelRemove
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,15 +25,15 @@ class MainActivity : AppCompatActivity() {
         _binding.radioMenu.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.btn_home -> {
-                    LevelHome::class.setCurrentItem(LevelHome.Home)
+                    fVisibleLevel<LevelHome>().setCurrentItem(LevelHome.Home)
                     selectView(R.id.view_home)
                 }
                 R.id.btn_live -> {
-                    LevelHome::class.setCurrentItem(LevelHome.Live)
+                    fVisibleLevel<LevelHome>().setCurrentItem(LevelHome.Live)
                     selectView(R.id.view_live)
                 }
                 R.id.btn_me -> {
-                    LevelHome::class.setCurrentItem(LevelHome.Me)
+                    fVisibleLevel<LevelHome>().setCurrentItem(LevelHome.Me)
                     selectView(R.id.view_me)
                 }
                 else -> {}
@@ -56,17 +55,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        LevelHome::class.isVisible = true
+        fVisibleLevel<LevelHome>().setVisible(true)
     }
 
     override fun onStop() {
         super.onStop()
-        LevelHome::class.isVisible = false
+        fVisibleLevel<LevelHome>().setVisible(false)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LevelHome::class.remove()
+        fVisibleLevelRemove<LevelHome>()
     }
 }
 

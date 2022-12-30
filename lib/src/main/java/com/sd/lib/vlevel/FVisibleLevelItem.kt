@@ -55,7 +55,7 @@ class FVisibleLevelItem internal constructor(
         if (oldChild == newChild) return null
 
         _childLevel = newChild
-        _childLevel?.isVisible = isVisible
+        _childLevel?.setVisible(isVisible)
 
         return oldChild
     }
@@ -104,7 +104,7 @@ class FVisibleLevelItem internal constructor(
             // --------------- Notify ---------------
 
             if (!_shouldReSync) {
-                _childLevel?.isVisible = isVisible
+                _childLevel?.setVisible(isVisible)
 
                 // 通知子级之后状态可能改变，所以这里需要再判断一下
                 if (_shouldReSync) {

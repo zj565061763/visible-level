@@ -3,7 +3,6 @@ package com.sd.lib.vlevel
 import android.os.Looper
 import android.util.Log
 import java.util.*
-import kotlin.reflect.KClass
 
 abstract class FVisibleLevel protected constructor() {
     /** 保存当前等级的Item */
@@ -24,9 +23,7 @@ abstract class FVisibleLevel protected constructor() {
         private set
 
     /** 当前等级是否可见 */
-    var isVisible: Boolean
-        get() = _isVisible
-        set(value) = setVisibleInternal(value)
+    val isVisible: Boolean get() = _isVisible
 
     /**
      * 等级创建回调
@@ -86,14 +83,17 @@ abstract class FVisibleLevel protected constructor() {
         }
     }
 
-    private fun setVisibleInternal(value: Boolean) {
+    /**
+     * 设置当前等级是否可见
+     */
+    fun setVisible(visible: Boolean) {
         checkUiThread()
         if (isRemoved) return
-        if (_isVisible == value) return
+        if (_isVisible == visible) return
 
-        _isVisible = value
-        logMsg { "${this@FVisibleLevel} setVisible $value" }
-        notifyItemVisibility(value, currentItem)
+        _isVisible = visible
+        logMsg { "${this@FVisibleLevel} setVisible $visible" }
+        notifyItemVisibility(visible, currentItem)
     }
 
     /**
@@ -199,32 +199,10 @@ internal fun checkUiThread() {
     check(Looper.myLooper() == Looper.getMainLooper()) { "You should do this on ui thread." }
 }
 
-/**
- * 当前等级可见状态
- */
-var KClass<out FVisibleLevel>.isVisible: Boolean
-    get() = FVisibleLevel.get(this.java).isVisible
-    set(value) {
-        FVisibleLevel.get(this.java).isVisible = value
-    }
-
-/**
- * 设置当前等级的可见Item为[name]
- */
-fun KClass<out FVisibleLevel>.setCurrentItem(name: String) {
-    FVisibleLevel.get(this.java).setCurrentItem(name)
+inline fun <reified T : FVisibleLevel> fVisibleLevel(): FVisibleLevel {
+    return FVisibleLevel.get(T::class.java)
 }
 
-/**
- * 获取名称为[name]的Item
- */
-fun KClass<out FVisibleLevel>.getItem(name: String): FVisibleLevelItem {
-    return FVisibleLevel.get(this.java).getItem(name)
-}
-
-/**
- * 移除等级
- */
-fun KClass<out FVisibleLevel>.remove() {
-    FVisibleLevel.remove(this.java)
+inline fun <reified T : FVisibleLevel> fVisibleLevelRemove() {
+    FVisibleLevel.remove(T::class.java)
 }
