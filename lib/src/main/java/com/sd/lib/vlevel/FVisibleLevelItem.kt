@@ -49,10 +49,10 @@ class FVisibleLevelItem internal constructor(
         checkUiThread()
 
         val newChild = if (clazz == null) null else FVisibleLevel.get(clazz)
-        require(this.level != newChild) { "Child level should not be current level." }
+        require(newChild !== this.level) { "Child level should not be current level." }
 
         val oldChild = _childLevel
-        if (oldChild == newChild) return null
+        if (oldChild === newChild) return null
 
         _childLevel = newChild
         _childLevel?.setVisible(isVisible)
