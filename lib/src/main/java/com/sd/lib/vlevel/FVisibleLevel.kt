@@ -89,7 +89,7 @@ abstract class FVisibleLevel protected constructor() {
     fun setVisible(visible: Boolean) {
         checkUiThread()
         if (isRemoved) return
-        if (_isVisible == visible) return
+        if (isVisible == visible) return
 
         _isVisible = visible
         logMsg { "${this@FVisibleLevel} setVisible $visible" }
