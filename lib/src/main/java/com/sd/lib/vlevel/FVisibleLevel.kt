@@ -106,7 +106,7 @@ abstract class FVisibleLevel protected constructor() {
 
         val oldItem = currentItem
         val newItem = getOrCreateItem(name)
-        if (newItem == oldItem) return
+        if (newItem === oldItem) return
 
         currentItem = newItem
 
@@ -121,7 +121,7 @@ abstract class FVisibleLevel protected constructor() {
      */
     private fun notifyItemVisibility(value: Boolean, item: FVisibleLevelItem) {
         if (isRemoved) return
-        if (item == EmptyItem) return
+        if (item === EmptyItem) return
 
         if (value && !_isVisible) return
         if (value && currentItem != item) return
@@ -196,7 +196,7 @@ internal inline fun logMsg(block: () -> String) {
 }
 
 internal fun checkUiThread() {
-    check(Looper.myLooper() == Looper.getMainLooper()) { "You should do this on ui thread." }
+    check(Looper.myLooper() === Looper.getMainLooper()) { "You should do this on ui thread." }
 }
 
 inline fun <reified T : FVisibleLevel> fVisibleLevel(): FVisibleLevel {
