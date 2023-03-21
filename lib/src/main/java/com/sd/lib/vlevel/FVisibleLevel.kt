@@ -123,7 +123,7 @@ abstract class FVisibleLevel protected constructor() {
         if (isRemoved) return
         if (item === EmptyItem) return
 
-        if (value && !_isVisible) return
+        if (value && !isVisible) return
         if (value && currentItem != item) return
 
         if (_itemHolder.containsKey(item.name)) {
