@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "visible-level"
-val libVersionName = "1.2.0-rc01"
+val libVersionName = "1.2.0"
 
 android {
     namespace = "com.sd.lib.vlevel"
