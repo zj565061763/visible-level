@@ -70,5 +70,5 @@ class MainActivity : AppCompatActivity() {
 }
 
 inline fun logMsg(block: () -> String) {
-    Log.i("FVisibleLevel-demo", block())
+    Log.i("visible-level-demo", block())
 }
